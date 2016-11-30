@@ -15,11 +15,13 @@
     tools:context="com.snippet.snippet.MainWindow_Activity">
 
     <LinearLayout
+        android:id="@+id/untaggedPhotosLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_alignParentTop="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -28,24 +30,64 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hello World!"
+                android:text="@string/Untagged_Photos"
                 android:textAlignment="center"
-                android:gravity="center_horizontal"
-                android:layout_weight="90"/>
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"/>
 
             <Button
                 android:layout_width="@dimen/tiny_button_width"
                 android:layout_height="@dimen/tiny_button_height"
-                android:gravity="right"
-                android:text=">"
-                android:layout_weight="10"/>
+                android:layout_alignParentEnd="true"
+                android:text="@string/goto_button_tag"
+                android:textSize="10sp"
+                android:textScaleX="1.0" />
 
-        </LinearLayout>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="@dimen/divider_width"
+            android:layout_height="@dimen/divider_height"
+            android:background="@color/colorBlack"
+            android:layout_gravity="center_horizontal" />
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/untaggedPhotosRecyclerView"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/taggedPhotosLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/untaggedPhotosLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="@string/Tagged_Photos"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"
+            android:paddingBottom="4dp"/>
+
+        <View
+            android:layout_width="@dimen/divider_width"
+            android:layout_height="@dimen/divider_height"
+            android:background="@color/colorBlack"
+            android:layout_gravity="center_horizontal" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/TaggedPhotosRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
         </android.support.v7.widget.RecyclerView>
 
