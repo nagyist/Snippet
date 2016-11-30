@@ -12,7 +12,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/app_bar_main_window_"
-    tools:context="com.snippet.snippet.MainWindow_Activity">
+    tools:context="com.snippet.snippet.view.MainWindow_Activity">
 
     <LinearLayout
         android:id="@+id/untaggedPhotosLayout"
@@ -41,8 +41,9 @@
                 android:layout_height="@dimen/tiny_button_height"
                 android:layout_alignParentEnd="true"
                 android:text="@string/goto_button_tag"
-                android:textSize="10sp"
-                android:textScaleX="1.0" />
+                android:textAlignment="viewStart"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
@@ -85,7 +86,7 @@
             android:layout_gravity="center_horizontal" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/TaggedPhotosRecyclerView"
+            android:id="@+id/taggedPhotosRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

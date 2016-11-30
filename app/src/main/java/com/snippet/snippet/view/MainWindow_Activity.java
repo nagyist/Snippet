@@ -1,8 +1,15 @@
-package com.snippet.snippet;
+package com.snippet.snippet.view;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.AttributeSet;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,12 +20,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.snippet.snippet.R;
+import com.snippet.snippet.controller.adapters.UntaggedPhotosRecyclerViewAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainWindow_Activity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG_UNTAGGEDPHOTOS = "UNTAGGED";
+    private static final String TAG_TAGGEDPHOTOS = "TAGGED";
+    private static final String TAG_HIDDENPHOTOS = "HIDDEN";
+
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
+    @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +45,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         setContentView(R.layout.activity_main_window_);
         /*USE THE BINDVIEW ANNOTATION INSTEAD OF FIND VIEW BY ID. THIS WILL MAKE OUR CODE CLEANER
         * THANKS TO BUTTERKNIFE*/
-        ButterKnife.bind(this); //T
+        ButterKnife.bind(this); //This allows you to use the bindings you made above
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -48,6 +67,16 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Set the Layout Managers
+        untaggedPhotosRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        taggedPhotosRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
+
+        //Set the RecyclerView Adapters
+        ArrayList<Integer> resourceLocations = fillWithImages(TAG_UNTAGGEDPHOTOS);
+        untaggedPhotosRecyclerView.setAdapter(new UntaggedPhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
+        resourceLocations = fillWithImages(TAG_TAGGEDPHOTOS);
+        taggedPhotosRecyclerView.setAdapter(new UntaggedPhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
     }
 
     @Override
@@ -106,4 +135,33 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    /**
+     * Temporary proof of concept code to show the images in the recyclerview
+     * @param TAG The tag to indicate which photos should be placed in the view
+     * @return an arraylist of resource locations
+     */
+    public ArrayList<Integer> fillWithImages(String TAG) {
+        ArrayList<Integer> resourceLocations = new ArrayList<Integer>();
+        switch(TAG) {
+            case TAG_UNTAGGEDPHOTOS:
+                for(int i = 0; i < 10; i++) {
+                    resourceLocations.add(R.mipmap.ic_launcher);
+                }
+                break;
+            case TAG_TAGGEDPHOTOS:
+                for(int i = 0; i < 30; i++) {
+                    resourceLocations.add(R.mipmap.ic_launcher);
+                }
+                break;
+            case TAG_HIDDENPHOTOS:
+                for(int i = 0; i < 10; i++) {
+                    resourceLocations.add(R.mipmap.ic_launcher);
+                }
+                break;
+        }
+
+        return resourceLocations;
+    }
+
 }
