@@ -91,7 +91,13 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
         resourceLocations = fillWithBitmaps(TAG_TAGGEDPHOTOS);
         taggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
-//        new AsyncImageLogic().execute(TAG_UNTAGGEDPHOTOS, TAG_TAGGEDPHOTOS);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new AsyncImageLogic().doInBackground(TAG_UNTAGGEDPHOTOS, TAG_TAGGEDPHOTOS);
+            }
+        }).start();
+
     }
 
     @Override
@@ -161,10 +167,10 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         ArrayList<String> paths = ImageUtils.getImagesPath(this);
         switch(TAG) {
             case TAG_UNTAGGEDPHOTOS:
-                bitmaps = ImageUtils.getImagesBitmap(paths, 20);
+                bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(20, paths.size()));
                 break;
             case TAG_TAGGEDPHOTOS:
-                bitmaps = ImageUtils.getImagesBitmap(paths, 75);
+                bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(75, paths.size()));
                 break;
             case TAG_HIDDENPHOTOS:
                 break;
@@ -174,44 +180,44 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     }
 
     /* ATTEMPTING TO DO ASYNCHRONOUS IMAGE FETCHING. ISSUES WITH UPDATING UI NOT ON ORIGINAL THREAD */
-//    public void updateRecyclerView(String TAG, List<Bitmap> imagesToAdd) {
-//        switch(TAG) {
-//            case TAG_UNTAGGEDPHOTOS:
-//                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
-//                break;
-//            case TAG_TAGGEDPHOTOS:
-//                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
-//                break;
-//            case TAG_HIDDENPHOTOS:
-//                break;
-//        }
-//    }
-//
-//    protected class AsyncImageLogic extends AsyncTask<String, Integer, Integer> {
-//
-//        @Override
-//        protected Integer doInBackground(String... params) {
-//            int numPhotosFetched = 0;
-//            int numTags = params.length;
-//            ArrayList<Bitmap> bitmaps = new ArrayList<>();
-//            for (int i = 0; i < params.length; i++) {
-//                bitmaps = fillWithBitmaps(params[i]);
-//                numPhotosFetched += bitmaps.size();
-//                publishProgress((int) ((i / (float) numTags) * 100));
-//                updateRecyclerView(params[i], bitmaps);
-//            }
-//
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(Integer... progress) {
-//            Log.i("Image Fetching Progress", "Progress is now: " + progress[0]);
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Integer result) {
-//            Toast.makeText(MainWindow_Activity.this, "Fetched " + result + " photos from local directory.", Toast.LENGTH_SHORT).show();
-//        }
-//    }
+    public void updateRecyclerView(String TAG, List<Bitmap> imagesToAdd) {
+        switch(TAG) {
+            case TAG_UNTAGGEDPHOTOS:
+                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
+                break;
+            case TAG_TAGGEDPHOTOS:
+                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
+                break;
+            case TAG_HIDDENPHOTOS:
+                break;
+        }
+    }
+
+    protected class AsyncImageLogic extends AsyncTask<String, Integer, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            int numPhotosFetched = 0;
+            int numTags = params.length;
+            ArrayList<Bitmap> bitmaps = new ArrayList<>();
+            for (int i = 0; i < params.length; i++) {
+                bitmaps = fillWithBitmaps(params[i]);
+                numPhotosFetched += bitmaps.size();
+                publishProgress((int) ((i / (float) numTags) * 100));
+                updateRecyclerView(params[i], bitmaps);
+            }
+
+            return numPhotosFetched;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            Log.i("Image Fetching Progress", "Progress is now: " + progress[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            Toast.makeText(MainWindow_Activity.this, "Fetched " + result + " photos from local directory.", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
