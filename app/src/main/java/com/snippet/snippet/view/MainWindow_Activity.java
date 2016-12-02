@@ -1,15 +1,20 @@
 package com.snippet.snippet.view;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,9 +24,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.snippet.snippet.R;
-import com.snippet.snippet.controller.adapters.UntaggedPhotosRecyclerViewAdapter;
+import com.snippet.snippet.controller.PermissionChecker;
+import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
+import com.snippet.snippet.model.ImageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +42,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     private static final String TAG_UNTAGGEDPHOTOS = "UNTAGGED";
     private static final String TAG_TAGGEDPHOTOS = "TAGGED";
     private static final String TAG_HIDDENPHOTOS = "HIDDEN";
+    public static final int PERMISSION_CAMERA = 1002;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
@@ -53,10 +62,14 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(Build.VERSION.SDK_INT >= 23) {
+                    if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_CAMERA);
+                    }
+                }
             }
         });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -68,15 +81,17 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
         //Set the Layout Managers
         untaggedPhotosRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         taggedPhotosRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
 
         //Set the RecyclerView Adapters
-        ArrayList<Integer> resourceLocations = fillWithImages(TAG_UNTAGGEDPHOTOS);
-        untaggedPhotosRecyclerView.setAdapter(new UntaggedPhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
-        resourceLocations = fillWithImages(TAG_TAGGEDPHOTOS);
-        taggedPhotosRecyclerView.setAdapter(new UntaggedPhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
+        ArrayList<Bitmap> resourceLocations = fillWithBitmaps(TAG_UNTAGGEDPHOTOS);
+        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
+        resourceLocations = fillWithBitmaps(TAG_TAGGEDPHOTOS);
+        taggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
+//        new AsyncImageLogic().execute(TAG_UNTAGGEDPHOTOS, TAG_TAGGEDPHOTOS);
     }
 
     @Override
@@ -141,27 +156,62 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
      * @param TAG The tag to indicate which photos should be placed in the view
      * @return an arraylist of resource locations
      */
-    public ArrayList<Integer> fillWithImages(String TAG) {
-        ArrayList<Integer> resourceLocations = new ArrayList<Integer>();
+    public ArrayList<Bitmap> fillWithBitmaps(String TAG) {
+        ArrayList<Bitmap> bitmaps = new ArrayList<Bitmap>();
+        ArrayList<String> paths = ImageUtils.getImagesPath(this);
         switch(TAG) {
             case TAG_UNTAGGEDPHOTOS:
-                for(int i = 0; i < 10; i++) {
-                    resourceLocations.add(R.mipmap.ic_launcher);
-                }
+                bitmaps = ImageUtils.getImagesBitmap(paths, 20);
                 break;
             case TAG_TAGGEDPHOTOS:
-                for(int i = 0; i < 30; i++) {
-                    resourceLocations.add(R.mipmap.ic_launcher);
-                }
+                bitmaps = ImageUtils.getImagesBitmap(paths, 75);
                 break;
             case TAG_HIDDENPHOTOS:
-                for(int i = 0; i < 10; i++) {
-                    resourceLocations.add(R.mipmap.ic_launcher);
-                }
                 break;
         }
 
-        return resourceLocations;
+        return bitmaps;
     }
 
+    /* ATTEMPTING TO DO ASYNCHRONOUS IMAGE FETCHING. ISSUES WITH UPDATING UI NOT ON ORIGINAL THREAD */
+//    public void updateRecyclerView(String TAG, List<Bitmap> imagesToAdd) {
+//        switch(TAG) {
+//            case TAG_UNTAGGEDPHOTOS:
+//                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
+//                break;
+//            case TAG_TAGGEDPHOTOS:
+//                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
+//                break;
+//            case TAG_HIDDENPHOTOS:
+//                break;
+//        }
+//    }
+//
+//    protected class AsyncImageLogic extends AsyncTask<String, Integer, Integer> {
+//
+//        @Override
+//        protected Integer doInBackground(String... params) {
+//            int numPhotosFetched = 0;
+//            int numTags = params.length;
+//            ArrayList<Bitmap> bitmaps = new ArrayList<>();
+//            for (int i = 0; i < params.length; i++) {
+//                bitmaps = fillWithBitmaps(params[i]);
+//                numPhotosFetched += bitmaps.size();
+//                publishProgress((int) ((i / (float) numTags) * 100));
+//                updateRecyclerView(params[i], bitmaps);
+//            }
+//
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... progress) {
+//            Log.i("Image Fetching Progress", "Progress is now: " + progress[0]);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Integer result) {
+//            Toast.makeText(MainWindow_Activity.this, "Fetched " + result + " photos from local directory.", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 }

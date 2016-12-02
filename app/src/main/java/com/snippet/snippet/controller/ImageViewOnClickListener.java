@@ -1,4 +1,4 @@
-package com.snippet.snippet.controller.adapters;
+package com.snippet.snippet.controller;
 
 import android.content.Context;
 import android.view.View;

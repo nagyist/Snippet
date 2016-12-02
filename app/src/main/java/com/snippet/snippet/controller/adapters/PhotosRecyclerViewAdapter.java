@@ -7,10 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.snippet.snippet.R;
+import com.snippet.snippet.controller.ImageViewOnClickListener;
 
 import java.util.List;
 
@@ -18,8 +17,8 @@ import java.util.List;
  * Created by Mustang on 11/30/16.
  */
 
-public class UntaggedPhotosRecyclerViewAdapter extends RecyclerView.Adapter<UntaggedPhotosRecyclerViewAdapter.ViewHolder> {
-    private List<Integer> mDataset;
+public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecyclerViewAdapter.ViewHolder> {
+    private List<Bitmap> mDataset;
     private Context mContext;
 
     // Provide a reference to the views for each data item
@@ -36,15 +35,15 @@ public class UntaggedPhotosRecyclerViewAdapter extends RecyclerView.Adapter<Unta
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public UntaggedPhotosRecyclerViewAdapter(List<Integer> myDataset, Context context) {
+    public PhotosRecyclerViewAdapter(List<Bitmap> myDataset, Context context) {
         mDataset = myDataset;
         mContext = context;
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public UntaggedPhotosRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public PhotosRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                                   int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.image_view, parent, false);
@@ -59,7 +58,7 @@ public class UntaggedPhotosRecyclerViewAdapter extends RecyclerView.Adapter<Unta
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mImageView.setImageResource(mDataset.get(position));
+        holder.mImageView.setImageBitmap(mDataset.get(position));
 
     }
 
@@ -69,21 +68,21 @@ public class UntaggedPhotosRecyclerViewAdapter extends RecyclerView.Adapter<Unta
         return mDataset.size();
     }
 
-    public void addImage(Integer resourceLocation) {
-        mDataset.add(resourceLocation);
+    public void addImage(Bitmap imageBitmap) {
+        mDataset.add(imageBitmap);
         this.notifyDataSetChanged();
     }
 
-    public void addImage(List<Integer> resourceLocations) {
-        for (Integer resourceLocation: resourceLocations) {
-            mDataset.add(resourceLocation);
+    public void addImage(List<Bitmap> imageBitmaps) {
+        for (Bitmap imageBitmap: imageBitmaps) {
+            mDataset.add(imageBitmap);
         }
         this.notifyDataSetChanged();
     }
 
-    public void addImage(Integer[] resourceLocations) {
-        for (Integer resourceLocation: resourceLocations) {
-            mDataset.add(resourceLocation);
+    public void addImage(Bitmap[] imageBitmaps) {
+        for (Bitmap imageBitmap: imageBitmaps) {
+            mDataset.add(imageBitmap);
         }
         this.notifyDataSetChanged();
     }
