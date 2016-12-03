@@ -10,8 +10,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -45,9 +47,12 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     private static final String TAG_HIDDENPHOTOS = "HIDDEN";
     public static final int PERMISSION_CAMERA = 1002;
 
+    private ArrayList<String> paths;
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
     @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
+    @BindView(R.id.progressBar) ContentLoadingProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +68,12 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Build.VERSION.SDK_INT >= 23) {
-                    if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_CAMERA);
-                    }
-                }
+                Toast.makeText(MainWindow_Activity.this, "Camera Button", Toast.LENGTH_SHORT).show();
+                requestCameraPermissions();
             }
         });
 
+        paths = null;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -88,11 +91,30 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         taggedPhotosRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
 
         //Set the RecyclerView Adapters
-        ArrayList<Bitmap> resourceLocations = fillWithBitmaps(TAG_UNTAGGEDPHOTOS);
+//        ArrayList<Bitmap> resourceLocations = new ArrayList<>();
+        ArrayList<Bitmap> resourceLocations = new ArrayList<>();
         untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
-        resourceLocations = fillWithBitmaps(TAG_TAGGEDPHOTOS);
         taggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
 
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.show();
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new AsyncImageLogic().execute(TAG_UNTAGGEDPHOTOS);
+                new AsyncImageLogic().execute(TAG_TAGGEDPHOTOS);
+            }
+        });
+        thread.run();
+    }
+
+    public void requestCameraPermissions() {
+        if(Build.VERSION.SDK_INT >= 23) {
+            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            }
+        }
     }
 
     @Override
@@ -159,13 +181,15 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
      */
     public ArrayList<Bitmap> fillWithBitmaps(String TAG) {
         ArrayList<Bitmap> bitmaps = new ArrayList<Bitmap>();
-        ArrayList<String> paths = ImageUtils.getImagesPath(this);
+        if(paths == null) {
+            paths = ImageUtils.getImagesPath(this);
+        }
         switch(TAG) {
             case TAG_UNTAGGEDPHOTOS:
-                bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(20, paths.size()));
+                bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(50, paths.size()));
                 break;
             case TAG_TAGGEDPHOTOS:
-                bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(75, paths.size()));
+                bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(150, paths.size()));
                 break;
             case TAG_HIDDENPHOTOS:
                 break;
@@ -181,7 +205,9 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
                 ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
                 break;
             case TAG_TAGGEDPHOTOS:
-                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
+                ((PhotosRecyclerViewAdapter) taggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
+                progressBar.hide();
+                progressBar.setVisibility(View.GONE);
                 break;
             case TAG_HIDDENPHOTOS:
                 break;
@@ -207,14 +233,9 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     }
 
     @Override
-    public void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new AsyncImageLogic().execute(TAG_UNTAGGEDPHOTOS);
-                new AsyncImageLogic().execute(TAG_TAGGEDPHOTOS);
-            }
-        });
+    public void onPause() {
+        super.onPause();
+        Bundle savedInstanceState = new Bundle();
+
     }
 }

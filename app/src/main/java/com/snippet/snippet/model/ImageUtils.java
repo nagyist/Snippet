@@ -53,7 +53,7 @@ public class ImageUtils {
         ArrayList<Bitmap> bitmaps = new ArrayList<>();
 
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 4;
+        options.inSampleSize = 10;
         for(int i = 0; i < numImages; i++) {
             bitmaps.add(BitmapFactory.decodeFile(imagePaths.get(i), options));
         }

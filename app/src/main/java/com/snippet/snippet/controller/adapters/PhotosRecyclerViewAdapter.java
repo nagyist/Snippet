@@ -46,7 +46,7 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
                                                                    int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.image_view, parent, false);
+                .inflate(R.layout.image_view_preview, parent, false);
         // set the view's size, margins, paddings and layout parameters
 
         ViewHolder vh = new ViewHolder((ImageView) v, mContext);
@@ -86,8 +86,6 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
         }
         this.notifyDataSetChanged();
     }
-    
-    
+
+
 }
-
-
