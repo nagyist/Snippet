@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -91,12 +92,6 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
         resourceLocations = fillWithBitmaps(TAG_TAGGEDPHOTOS);
         taggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new AsyncImageLogic().doInBackground(TAG_UNTAGGEDPHOTOS, TAG_TAGGEDPHOTOS);
-            }
-        }).start();
 
     }
 
@@ -193,31 +188,33 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         }
     }
 
-    protected class AsyncImageLogic extends AsyncTask<String, Integer, Integer> {
+    protected class AsyncImageLogic extends AsyncTask<String, Integer, Pair<String, ArrayList<Bitmap>>> {
 
         @Override
-        protected Integer doInBackground(String... params) {
-            int numPhotosFetched = 0;
-            int numTags = params.length;
+        protected Pair<String, ArrayList<Bitmap>> doInBackground(String... params) {
             ArrayList<Bitmap> bitmaps = new ArrayList<>();
             for (int i = 0; i < params.length; i++) {
                 bitmaps = fillWithBitmaps(params[i]);
-                numPhotosFetched += bitmaps.size();
-                publishProgress((int) ((i / (float) numTags) * 100));
-                updateRecyclerView(params[i], bitmaps);
             }
 
-            return numPhotosFetched;
+            return new Pair<>(params[0], bitmaps);
         }
 
         @Override
-        protected void onProgressUpdate(Integer... progress) {
-            Log.i("Image Fetching Progress", "Progress is now: " + progress[0]);
+        protected void onPostExecute(Pair<String, ArrayList<Bitmap>> result) {
+            updateRecyclerView(result.first, result.second);
         }
+    }
 
-        @Override
-        protected void onPostExecute(Integer result) {
-            Toast.makeText(MainWindow_Activity.this, "Fetched " + result + " photos from local directory.", Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new AsyncImageLogic().execute(TAG_UNTAGGEDPHOTOS);
+                new AsyncImageLogic().execute(TAG_TAGGEDPHOTOS);
+            }
+        });
     }
 }
