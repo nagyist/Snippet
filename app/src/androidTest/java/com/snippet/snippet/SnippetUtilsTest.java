@@ -3,12 +3,14 @@ package com.snippet.snippet;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import com.snippet.snippet.model.DatabaseUtils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertTrue;
@@ -47,6 +49,11 @@ public class SnippetUtilsTest {
         List<String> paths = DatabaseUtils.getImagePathsWithTag(appContext, "Testing Tag 1");
 
         assertTrue(paths.size() == 2);
+
+        assertTrue(paths.contains("Testing Path 1"));
+        assertTrue(paths.contains("Testing Path 4"));
+
+        DatabaseUtils.removeAllTables(appContext);
 //        assertTrue(true);
     }
 }

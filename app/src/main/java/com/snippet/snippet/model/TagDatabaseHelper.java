@@ -16,7 +16,7 @@ public class TagDatabaseHelper extends SQLiteOpenHelper {
     private static final String UNIQUE = " UNIQUE";
     private static final String COMMA_SEP = ",";
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + TagDatabaseContract.TagDatabase.TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + TagDatabaseContract.TagDatabase.TABLE_NAME + " (" +
                     TagDatabaseContract.TagDatabase._ID + INT_TYPE + NOT_NULL + COMMA_SEP +
                     TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     " PRIMARY KEY (" + TagDatabaseContract.TagDatabase._ID + ")" +
@@ -31,6 +31,7 @@ public class TagDatabaseHelper extends SQLiteOpenHelper {
 
     public TagDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        onCreate(this.getWritableDatabase());
     }
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
@@ -43,6 +44,10 @@ public class TagDatabaseHelper extends SQLiteOpenHelper {
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
+    }
+
+    public void removeTable(SQLiteDatabase db) {
+        db.execSQL(SQL_DELETE_ENTRIES);
     }
 
 }

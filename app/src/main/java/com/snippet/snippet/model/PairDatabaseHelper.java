@@ -16,10 +16,10 @@ public class PairDatabaseHelper extends SQLiteOpenHelper {
     private static final String UNIQUE = " UNIQUE";
     private static final String COMMA_SEP = ", ";
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + PairDatabaseContract.PairDatabase.TABLE_NAME + " (" +
-                    PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + INT_TYPE + " REFERENCES " + FileDatabaseContract.FileDatabase.TABLE_NAME + "(" + FileDatabaseContract.FileDatabase._ID + ")" + " ON UPDATE CASCADE" + COMMA_SEP +
-                    PairDatabaseContract.PairDatabase.COLUMN_NAME_TAGID + INT_TYPE + " REFERENCES " + TagDatabaseContract.TagDatabase.TABLE_NAME + "(" + TagDatabaseContract.TagDatabase._ID + ")" + " ON UPDATE CASCADE" + COMMA_SEP +
-                    " PRIMARY KEY (" + PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + COMMA_SEP + PairDatabaseContract.PairDatabase.COLUMN_NAME_TAGID + ")" +
+            "CREATE TABLE IF NOT EXISTS " + PairDatabaseContract.PairDatabase.TABLE_NAME + " (" +
+                    PairDatabaseContract.PairDatabase._ID + INT_TYPE + " PRIMARY KEY" + COMMA_SEP +
+                    PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + INT_TYPE + NOT_NULL + COMMA_SEP +
+                    PairDatabaseContract.PairDatabase.COLUMN_NAME_TAGID + INT_TYPE + NOT_NULL +
                     ")";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -31,6 +31,7 @@ public class PairDatabaseHelper extends SQLiteOpenHelper {
 
     public PairDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        onCreate(this.getWritableDatabase());
     }
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
@@ -43,6 +44,10 @@ public class PairDatabaseHelper extends SQLiteOpenHelper {
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
+    }
+
+    public void removeTable(SQLiteDatabase db) {
+        db.execSQL(SQL_DELETE_ENTRIES);
     }
 
 }

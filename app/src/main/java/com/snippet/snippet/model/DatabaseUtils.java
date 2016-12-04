@@ -129,11 +129,11 @@ public class DatabaseUtils {
         String[] pairArgs = new String[tagIDs.size()];
         for (int i = 0; i < tagIDs.size(); i++) {
             pairArgs[i] = Integer.toString(tagIDs.get(i));
-            if(i < fileIDs.size()-1) {
-                tagSelection += "?, ";
+            if(i < tagIDs.size()-1) {
+                pairSelection += "?, ";
             }
             else {
-                tagSelection += "?)";
+                pairSelection += "?)";
             }
         }
 
@@ -154,7 +154,7 @@ public class DatabaseUtils {
 
         c2.moveToFirst();
         while(!c2.isAfterLast()) {
-            tagIDs.add(c2.getInt(
+            fileIDs.add(c2.getInt(
                     c2.getColumnIndexOrThrow(PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID)
             ));
             c2.moveToNext();
@@ -294,6 +294,28 @@ public class DatabaseUtils {
         db.close();
 
         return tagID;
+    }
+
+    public static void removeAllTables(Context context) {
+
+        PairDatabaseHelper pairsDBHelper = getPairsDatabaseReference(context);
+        TagDatabaseHelper tagsDBHelper = getTagsDatabaseReference(context);
+        FileDatabaseHelper filesDBHelper = getFilesDatabaseReference(context);
+
+        SQLiteDatabase db = pairsDBHelper.getWritableDatabase();
+        pairsDBHelper.removeTable(db);
+
+        db.close();
+
+        db = tagsDBHelper.getWritableDatabase();
+        tagsDBHelper.removeTable(db);
+
+        db.close();
+
+        db = filesDBHelper.getWritableDatabase();
+        filesDBHelper.removeTable(db);
+
+        db.close();
     }
 
 }

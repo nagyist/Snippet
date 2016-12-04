@@ -15,7 +15,7 @@ public class FileDatabaseHelper extends SQLiteOpenHelper {
     private static final String NOT_NULL = " NOT NULL";
     private static final String COMMA_SEP = ", ";
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + FileDatabaseContract.FileDatabase.TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + FileDatabaseContract.FileDatabase.TABLE_NAME + " (" +
                     FileDatabaseContract.FileDatabase._ID + " INTEGER PRIMARY KEY" + " AUTOINCREMENT" + COMMA_SEP +
                     FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED + BOOLEAN_TYPE + NOT_NULL + " )";
@@ -29,6 +29,7 @@ public class FileDatabaseHelper extends SQLiteOpenHelper {
 
     public FileDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        onCreate(this.getWritableDatabase());
     }
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
@@ -41,6 +42,10 @@ public class FileDatabaseHelper extends SQLiteOpenHelper {
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
+    }
+
+    public void removeTable(SQLiteDatabase db) {
+        db.execSQL(SQL_DELETE_ENTRIES);
     }
 
 }
