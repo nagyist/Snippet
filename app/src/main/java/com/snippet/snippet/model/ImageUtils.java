@@ -28,12 +28,14 @@ public class ImageUtils {
         Cursor cursor;
         int column_index_data, column_index_folder_name;
         String PathOfImage = null;
+        //Ensure permissions are granted
         if(ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI; //get the path for the images database
 
             String[] projection = {MediaStore.MediaColumns.DATA,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
 
+            //create a cursor that can iterate through the database of image data
             cursor = activity.getContentResolver().query(uri, projection, null,
                     null, null);
 
@@ -41,11 +43,12 @@ public class ImageUtils {
             column_index_folder_name = cursor
                     .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
             while (cursor.moveToNext()) {
-                PathOfImage = cursor.getString(column_index_data);
+                PathOfImage = cursor.getString(column_index_data); //get the path from the database entry
 
-                listOfAllImages.add(PathOfImage);
+                listOfAllImages.add(PathOfImage); //add the path to the list
             }
         }
+
         return listOfAllImages;
     }
 
@@ -57,7 +60,6 @@ public class ImageUtils {
         for(int i = 0; i < numImages; i++) {
             bitmaps.add(BitmapFactory.decodeFile(imagePaths.get(i), options));
         }
-        Log.d("DEBUG IMAGE SEARCH", "Number of images found: " + imagePaths.size());
         return bitmaps;
     }
 
