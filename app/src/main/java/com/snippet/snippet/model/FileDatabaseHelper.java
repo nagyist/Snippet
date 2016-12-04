@@ -3,7 +3,6 @@ package com.snippet.snippet.model;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
 
 /**
  * Created by Kyle on 12/3/2016.
@@ -14,10 +13,10 @@ public class FileDatabaseHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
     private static final String BOOLEAN_TYPE = " BOOLEAN";
     private static final String NOT_NULL = " NOT NULL";
-    private static final String COMMA_SEP = ",";
+    private static final String COMMA_SEP = ", ";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + FileDatabaseContract.FileDatabase.TABLE_NAME + " (" +
-                    FileDatabaseContract.FileDatabase._ID + " INTEGER PRIMARY KEY" + NOT_NULL + COMMA_SEP +
+                    FileDatabaseContract.FileDatabase._ID + " INTEGER PRIMARY KEY" + " AUTOINCREMENT" + COMMA_SEP +
                     FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                     FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED + BOOLEAN_TYPE + NOT_NULL + " )";
 
