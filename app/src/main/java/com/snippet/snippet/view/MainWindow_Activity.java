@@ -47,7 +47,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     private static final String TAG_HIDDENPHOTOS = "HIDDEN";
     public static final int PERMISSION_CAMERA = 1002;
 
-    private ArrayList<String> paths;
+    private List<String> paths;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
@@ -179,8 +179,8 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
      * @param TAG The tag to indicate which photos should be placed in the view
      * @return an arraylist of resource locations
      */
-    public ArrayList<Bitmap> fillWithBitmaps(String TAG) {
-        ArrayList<Bitmap> bitmaps = new ArrayList<Bitmap>();
+    public List<Bitmap> fillWithBitmaps(String TAG) {
+        List<Bitmap> bitmaps = new ArrayList<>();
         if(paths == null) {
             paths = ImageUtils.getImagesPath(this);
         }
@@ -214,11 +214,11 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         }
     }
 
-    protected class AsyncImageLogic extends AsyncTask<String, Integer, Pair<String, ArrayList<Bitmap>>> {
+    protected class AsyncImageLogic extends AsyncTask<String, Integer, Pair<String, List<Bitmap>>> {
 
         @Override
-        protected Pair<String, ArrayList<Bitmap>> doInBackground(String... params) {
-            ArrayList<Bitmap> bitmaps = new ArrayList<>();
+        protected Pair<String, List<Bitmap>> doInBackground(String... params) {
+            List<Bitmap> bitmaps = new ArrayList<>();
             for (int i = 0; i < params.length; i++) {
                 bitmaps = fillWithBitmaps(params[i]);
             }
@@ -227,7 +227,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         }
 
         @Override
-        protected void onPostExecute(Pair<String, ArrayList<Bitmap>> result) {
+        protected void onPostExecute(Pair<String, List<Bitmap>> result) {
             updateRecyclerView(result.first, result.second);
         }
     }

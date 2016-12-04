@@ -15,6 +15,7 @@ import com.snippet.snippet.controller.PermissionChecker;
 import com.snippet.snippet.view.MainWindow_Activity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kyle Carrero on 11/30/16.
@@ -22,9 +23,9 @@ import java.util.ArrayList;
 
 public class ImageUtils {
 
-    public static ArrayList<String> getImagesPath(Activity activity) {
+    public static List<String> getImagesPath(Activity activity) {
         Uri uri;
-        ArrayList<String> listOfAllImages = new ArrayList<>();
+        List<String> listOfAllImages = new ArrayList<>();
         Cursor cursor;
         int column_index_data, column_index_folder_name;
         String PathOfImage = null;
@@ -52,8 +53,8 @@ public class ImageUtils {
         return listOfAllImages;
     }
 
-    public static ArrayList<Bitmap> getImagesBitmap(ArrayList<String> imagePaths, int numImages) {
-        ArrayList<Bitmap> bitmaps = new ArrayList<>();
+    public static List<Bitmap> getImagesBitmap(List<String> imagePaths, int numImages) {
+        List<Bitmap> bitmaps = new ArrayList<>();
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 10;

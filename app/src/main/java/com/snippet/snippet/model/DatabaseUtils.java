@@ -35,6 +35,21 @@ public class DatabaseUtils {
         long newRowId = db.insert(FileDatabaseContract.FileDatabase.TABLE_NAME, null, values);
     }
 
+    public static void addFilePathsToDB(Context context, List<String> filePaths) {
+        // Gets the data repository in write mode
+        SQLiteDatabase db = getDatabaseHelper(context).getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        for (String filePath: filePaths) {
+            values.put(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH, filePath);
+            values.put(FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED, false);
+        }
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(FileDatabaseContract.FileDatabase.TABLE_NAME, null, values);
+    }
+
     public static void addTagToDB(Context context, String tag) {
         // Gets the data repository in write mode
         SQLiteDatabase db = getDatabaseHelper(context).getWritableDatabase();
@@ -288,6 +303,35 @@ public class DatabaseUtils {
         DBHelper.removeTables(db);
 
         db.close();
+    }
+
+    public static List<String> getAllFilePaths(Context context) {
+        List<String> paths = new ArrayList<>();
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String[] projection = {
+                FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH
+        };
+
+        String sortOrder = FileDatabaseContract.FileDatabase._ID + " DESC";
+
+        Cursor c = db.query(
+                FileDatabaseContract.FileDatabase.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                sortOrder
+        );
+
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            paths.add(c.getString(c.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH)));
+        }
+
+        return paths;
     }
 
 }
