@@ -2,6 +2,7 @@ package com.snippet.snippet.view;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -27,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.snippet.snippet.R;
@@ -53,6 +55,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
     @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
     @BindView(R.id.progressBar) ContentLoadingProgressBar progressBar;
+    @BindView(R.id.untaggedPhotosButton) Button untaggedPhotosButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +110,15 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
             }
         });
         thread.run();
+
+        untaggedPhotosButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainWindow_Activity.this.getBaseContext(), UntaggedPhotosActivity.class);
+                intent.putExtra(UntaggedPhotosActivity.pathsExtraKey, paths);
+                startActivity(intent);
+            }
+        });
     }
 
     public void requestCameraPermissions() {
