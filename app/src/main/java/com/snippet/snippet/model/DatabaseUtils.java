@@ -18,21 +18,13 @@ public class DatabaseUtils {
         //Nobody is allowed to instantiate this class
     }
 
-    private static FileDatabaseHelper getFilesDatabaseReference(Context context) {
-        return new FileDatabaseHelper(context);
-    }
-
-    private static TagDatabaseHelper getTagsDatabaseReference(Context context) {
-        return new TagDatabaseHelper(context);
-    }
-
-    private static PairDatabaseHelper getPairsDatabaseReference(Context context) {
-        return new PairDatabaseHelper(context);
+    private static DatabaseHelper getDatabaseHelper(Context context) {
+        return new DatabaseHelper(context);
     }
 
     public static void addFilePathToDB(Context context, String filePath, boolean isAutoTagged) {
         // Gets the data repository in write mode
-        SQLiteDatabase db = getFilesDatabaseReference(context).getWritableDatabase();
+        SQLiteDatabase db = getDatabaseHelper(context).getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -45,7 +37,7 @@ public class DatabaseUtils {
 
     public static void addTagToDB(Context context, String tag) {
         // Gets the data repository in write mode
-        SQLiteDatabase db = getTagsDatabaseReference(context).getWritableDatabase();
+        SQLiteDatabase db = getDatabaseHelper(context).getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -57,7 +49,7 @@ public class DatabaseUtils {
 
     public static void addPairToDB(Context context, int fileID, int tagID) {
         // Gets the data repository in write mode
-        SQLiteDatabase db = getPairsDatabaseReference(context).getWritableDatabase();
+        SQLiteDatabase db = getDatabaseHelper(context).getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -76,7 +68,7 @@ public class DatabaseUtils {
         /* TAGS DATABASE QUERY */////////////////////////////////////////////////////////////////
 
         // Gets the data repository in read mode
-        SQLiteDatabase db = getTagsDatabaseReference(context).getReadableDatabase();
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -110,12 +102,8 @@ public class DatabaseUtils {
         }
         
         c1.close();
-        
-        db.close();
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
-
-        db = getPairsDatabaseReference(context).getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -162,11 +150,7 @@ public class DatabaseUtils {
 
         c2.close();
 
-        db.close();
-
         /* FILES DATABASE QUERY */////////////////////////////////////////////////////////////////
-
-        db = getFilesDatabaseReference(context).getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -222,7 +206,7 @@ public class DatabaseUtils {
         int fileID;
 
         // Gets the data repository in read mode
-        SQLiteDatabase db = getFilesDatabaseReference(context).getReadableDatabase();
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -261,7 +245,7 @@ public class DatabaseUtils {
         int tagID;
 
         // Gets the data repository in read mode
-        SQLiteDatabase db = getTagsDatabaseReference(context).getReadableDatabase();
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -298,22 +282,10 @@ public class DatabaseUtils {
 
     public static void removeAllTables(Context context) {
 
-        PairDatabaseHelper pairsDBHelper = getPairsDatabaseReference(context);
-        TagDatabaseHelper tagsDBHelper = getTagsDatabaseReference(context);
-        FileDatabaseHelper filesDBHelper = getFilesDatabaseReference(context);
+        DatabaseHelper DBHelper = getDatabaseHelper(context);
 
-        SQLiteDatabase db = pairsDBHelper.getWritableDatabase();
-        pairsDBHelper.removeTable(db);
-
-        db.close();
-
-        db = tagsDBHelper.getWritableDatabase();
-        tagsDBHelper.removeTable(db);
-
-        db.close();
-
-        db = filesDBHelper.getWritableDatabase();
-        filesDBHelper.removeTable(db);
+        SQLiteDatabase db = DBHelper.getWritableDatabase();
+        DBHelper.removeTables(db);
 
         db.close();
     }
