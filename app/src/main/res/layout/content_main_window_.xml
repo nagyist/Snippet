@@ -37,6 +37,7 @@
                 android:textStyle="bold"/>
 
             <Button
+                android:id="@+id/untaggedPhotosButton"
                 android:layout_width="@dimen/tiny_button_width"
                 android:layout_height="@dimen/tiny_button_height"
                 android:layout_alignParentEnd="true"
