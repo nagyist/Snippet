@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
-import com.snippet.snippet.model.ImageUtils;
+import com.snippet.snippet.controller.ImageUtils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,14 +3,12 @@ package com.snippet.snippet;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
-import com.snippet.snippet.model.DatabaseUtils;
+import com.snippet.snippet.controller.DatabaseUtils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertTrue;

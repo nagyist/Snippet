@@ -1,9 +1,14 @@
-package com.snippet.snippet.model;
+package com.snippet.snippet.controller;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.snippet.snippet.model.DatabaseHelper;
+import com.snippet.snippet.model.FileDatabaseContract;
+import com.snippet.snippet.model.PairDatabaseContract;
+import com.snippet.snippet.model.TagDatabaseContract;
 
 import java.util.ArrayList;
 import java.util.List;

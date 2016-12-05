@@ -1,4 +1,4 @@
-package com.snippet.snippet.model;
+package com.snippet.snippet.controller;
 
 import android.Manifest;
 import android.app.Activity;
@@ -9,10 +9,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-
-import com.snippet.snippet.controller.PermissionChecker;
-import com.snippet.snippet.view.MainWindow_Activity;
 
 import java.util.ArrayList;
 import java.util.List;
