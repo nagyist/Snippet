@@ -96,8 +96,9 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         //Set the RecyclerView Adapters
 //        ArrayList<Bitmap> resourceLocations = new ArrayList<>();
         ArrayList<Bitmap> resourceLocations = new ArrayList<>();
-        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
-        taggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
+        ArrayList<Integer> resourceIds = new ArrayList<>();
+        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, resourceIds, this.getApplicationContext()));
+        taggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, resourceIds, this.getApplicationContext()));
 
         progressBar.setVisibility(View.VISIBLE);
         progressBar.show();
@@ -212,12 +213,17 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
 
     /* ATTEMPTING TO DO ASYNCHRONOUS IMAGE FETCHING. ISSUES WITH UPDATING UI NOT ON ORIGINAL THREAD */
     public void updateRecyclerView(String TAG, List<Bitmap> imagesToAdd) {
+        // TODO VERY PLACEHOLDER use all 0s for ids until async image logic returns them
+        List<Integer> imageIds = new ArrayList<>(imagesToAdd.size());
+        for (int i = 0; i < imagesToAdd.size(); i++) {
+            imageIds.add(0);
+        }
         switch(TAG) {
             case TAG_UNTAGGEDPHOTOS:
-                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
+                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd, imageIds);
                 break;
             case TAG_TAGGEDPHOTOS:
-                ((PhotosRecyclerViewAdapter) taggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd);
+                ((PhotosRecyclerViewAdapter) taggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd, imageIds);
                 progressBar.hide();
                 progressBar.setVisibility(View.GONE);
                 break;

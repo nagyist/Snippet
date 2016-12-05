@@ -24,7 +24,7 @@
         <activity
             android:name=".view.MainWindow_Activity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".view.RequestPermissions_Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,8 +35,9 @@
         <activity
             android:name=".view.UntaggedPhotosActivity"
             android:label="@string/Untagged_Photos"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".view.MainWindow_Activity"></activity>
+            android:parentActivityName=".view.MainWindow_Activity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".view.ImageViewerActivity"></activity>
     </application>
 
 </manifest>

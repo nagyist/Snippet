@@ -19,6 +19,7 @@ import java.util.List;
 
 public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecyclerViewAdapter.ViewHolder> {
     private List<Bitmap> mDataset;
+    private List<Integer> mDatasetIds; // Ids for the images in the bitmaps (for launching image viewer on click)
     private Context mContext;
 
     // Provide a reference to the views for each data item
@@ -30,13 +31,14 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
         public ViewHolder(ImageView v, Context context) {
             super(v);
             mImageView = v;
-            mImageView.setOnClickListener(new ImageViewOnClickListener(context));
+            //mImageView.setOnClickListener(new ImageViewOnClickListener(context));
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public PhotosRecyclerViewAdapter(List<Bitmap> myDataset, Context context) {
+    public PhotosRecyclerViewAdapter(List<Bitmap> myDataset, List<Integer> myDatasetIds, Context context) {
         mDataset = myDataset;
+        mDatasetIds = myDatasetIds;
         mContext = context;
     }
 
@@ -59,7 +61,7 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.mImageView.setImageBitmap(mDataset.get(position));
-
+        holder.mImageView.setOnClickListener(new ImageViewOnClickListener(mContext, mDatasetIds.get(position)));
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -68,21 +70,28 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
         return mDataset.size();
     }
 
-    public void addImage(Bitmap imageBitmap) {
+    public void addImage(Bitmap imageBitmap, int imageId) {
         mDataset.add(imageBitmap);
+        mDatasetIds.add(imageId);
         this.notifyDataSetChanged();
     }
 
-    public void addImage(List<Bitmap> imageBitmaps) {
+    public void addImage(List<Bitmap> imageBitmaps, List<Integer> imageIds) {
         for (Bitmap imageBitmap: imageBitmaps) {
             mDataset.add(imageBitmap);
+        }
+        for (Integer imageId: imageIds) {
+            mDatasetIds.add(imageId);
         }
         this.notifyDataSetChanged();
     }
 
-    public void addImage(Bitmap[] imageBitmaps) {
+    public void addImage(Bitmap[] imageBitmaps, int[] imageIds) {
         for (Bitmap imageBitmap: imageBitmaps) {
             mDataset.add(imageBitmap);
+        }
+        for (Integer imageId: imageIds) {
+            mDatasetIds.add(imageId);
         }
         this.notifyDataSetChanged();
     }

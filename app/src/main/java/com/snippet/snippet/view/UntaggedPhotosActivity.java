@@ -51,12 +51,18 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
 
         untaggedPhotosRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
         ArrayList<Bitmap> resourceLocations = new ArrayList<>();
-        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
+        ArrayList<Integer> resourceIds = new ArrayList<>();
+        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, resourceIds, this.getApplicationContext()));
         paths = getIntent().getStringArrayListExtra(pathsExtraKey);
         ArrayList<Bitmap> bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(50, paths.size()));
-        ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(bitmaps);
+        // TODO again using all 0s for image ids until we actually know what to use
+        resourceIds = new ArrayList<>(bitmaps.size());
+        for (int i = 0; i < bitmaps.size(); i++) {
+            resourceIds.add(0);
+        }
+        ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(bitmaps, resourceIds);
 
-        // TODO copied from MainWindow_Activity which was incomplete at the time
+        // TODO camera logic copied from MainWindow_Activity which was incomplete at the time
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
