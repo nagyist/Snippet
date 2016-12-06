@@ -1,20 +1,15 @@
 package com.snippet.snippet.view;
 
-<<<<<<< HEAD
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-=======
-import android.content.Context;
->>>>>>> ClarifAISetup
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
-<<<<<<< HEAD
-=======
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +17,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
->>>>>>> ClarifAISetup
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -66,8 +60,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     private List<String> paths;
 
     private Context context;
-    private ClarifaiClient client;
-
+    
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
     @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
