@@ -3,6 +3,7 @@ package com.snippet.snippet.view;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,8 +14,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.snippet.snippet.R;
+import com.snippet.snippet.controller.DatabaseUtils;
 import com.snippet.snippet.controller.TagListener;
 import com.snippet.snippet.controller.adapters.ClarifAIHelper;
+import com.snippet.snippet.model.DatabaseHelper;
 
 import java.util.List;
 
@@ -83,7 +86,8 @@ public class ImageViewerActivity extends AppCompatActivity {
         builder.setPositiveButton(R.string.Autotag_Dialog_Yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(ImageViewerActivity.this, "You clicked Yes", Toast.LENGTH_SHORT).show();
-                //TODO set appropriate flag in database
+                //Set appropriate flag in database
+                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, imageFilepath, true);
                 //Launch ClarifAI request
                 ClarifAIHelper clarifAIHelper = new ClarifAIHelper(ImageViewerActivity.this);
                 clarifAIHelper.sendToClarifAI(imageFilepath, tagListener);
@@ -93,14 +97,14 @@ public class ImageViewerActivity extends AppCompatActivity {
         builder.setNegativeButton(R.string.Autotag_Dialog_No, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(ImageViewerActivity.this, "You clicked No", Toast.LENGTH_SHORT).show();
-                //TODO set appropriate flag in database
+                //Set appropriate flag in database
+                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, imageFilepath, false);
             }
         });
         autoTagDialog = builder.create();
 
         //Launch the dialog if the user has not previously autotagged this image
-        //TODO
-        if(true) {
+        if(DatabaseUtils.getAutoTaggedFromFilePath(ImageViewerActivity.this, imageFilepath)) {
             autoTagDialog.show();
         }
     }
@@ -108,7 +112,13 @@ public class ImageViewerActivity extends AppCompatActivity {
     TagListener tagListener = new TagListener() {
         @Override
         public void onReceiveTags(List<String> tags) {
-            //TODO Update the tags in the database
+            int fileId = DatabaseUtils.getFileIDFromPath(ImageViewerActivity.this, imageFilepath);
+            //Update the tags in the database
+            for (String tag : tags) {
+                DatabaseUtils.addTagToDB(ImageViewerActivity.this, tag);
+                int new_tagid = DatabaseUtils.getTagIDFromTag(ImageViewerActivity.this, tag);
+                DatabaseUtils.addPairToDB(ImageViewerActivity.this, fileId, new_tagid);
+            }
         }
     };
 
