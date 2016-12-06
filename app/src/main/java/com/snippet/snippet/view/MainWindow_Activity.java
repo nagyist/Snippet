@@ -1,13 +1,28 @@
 package com.snippet.snippet.view;
 
+<<<<<<< HEAD
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+=======
+import android.content.Context;
+>>>>>>> ClarifAISetup
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
+<<<<<<< HEAD
+=======
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+>>>>>>> ClarifAISetup
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -23,14 +38,18 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.Button;
+
 import android.widget.Toast;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 import com.snippet.snippet.controller.ImageUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +65,9 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
 
     private List<String> paths;
 
+    private Context context;
+    private ClarifaiClient client;
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
     @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
@@ -55,6 +77,8 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
+
         setContentView(R.layout.activity_main_window_);
         /*USE THE BINDVIEW ANNOTATION INSTEAD OF FIND VIEW BY ID. THIS WILL MAKE OUR CODE CLEANER
         * THANKS TO BUTTERKNIFE*/
