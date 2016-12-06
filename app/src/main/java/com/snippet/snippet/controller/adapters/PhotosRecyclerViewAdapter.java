@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.ImageUtils;
+import com.snippet.snippet.controller.ImageViewOnClickListener;
 
 import java.util.List;
 
@@ -26,10 +27,16 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public ImageView mImageView;
+        public String mPath;
         public ViewHolder(ImageView v, Context context) {
             super(v);
             mImageView = v;
-            //mImageView.setOnClickListener(new ImageViewOnClickListener(context));
+            mImageView.setOnClickListener(new ImageViewOnClickListener(context, this));
+            mPath = "";
+        }
+
+        public String getPath() {
+            return mPath;
         }
     }
 
@@ -57,6 +64,7 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
     public void onBindViewHolder(PhotosRecyclerViewAdapter.ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+        holder.mPath = mDataset.get(position);
         ImageUtils.addImageToImageView(mContext, holder.mImageView, mDataset.get(position), 150, 150);
     }
 
@@ -64,6 +72,10 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public String getPathAtPosition(int position) {
+        return mDataset.get(position);
     }
 
     public void replaceDataset(List<String> dataset) {

@@ -1,8 +1,7 @@
 package com.snippet.snippet.view;
 
-import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -10,19 +9,20 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.snippet.snippet.R;
+import com.snippet.snippet.controller.ImageUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ImageViewerActivity extends AppCompatActivity {
 
-    public static final String FILEID_EXTRA_KEY = "snippet/fileid";
+    public static final String FILEPATH_EXTRA_KEY = "snippet/file_path";
     public static final String BITMAP_EXTRA_KEY = "snippet/bitmap";
 
     @BindView(R.id.bigImageView) ImageView mImageView;
     @BindView(R.id.addManageTagsBtn) Button tagsButton;
 
-    private int mImageId;
+    private String mFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +37,8 @@ public class ImageViewerActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        mImageId = getIntent().getIntExtra(FILEID_EXTRA_KEY, -1);
-        Bitmap bmp = getIntent().getParcelableExtra(BITMAP_EXTRA_KEY);
-        mImageView.setImageBitmap(bmp);
+        mFilePath = getIntent().getStringExtra(FILEPATH_EXTRA_KEY);
+        ImageUtils.addImageToImageView(this, mImageView, mFilePath, null, null);
 
         // TODO placeholder
         tagsButton.setOnClickListener(new View.OnClickListener() {

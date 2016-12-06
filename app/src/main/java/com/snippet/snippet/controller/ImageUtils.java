@@ -78,7 +78,7 @@ public class ImageUtils {
      */
     public static void addImageToImageView(Context context, ImageView imageView, String filePath, Integer resizeWidth, Integer resizeHeight) {
         if(resizeHeight == null || resizeWidth == null) {
-            Picasso.with(context).load(new File(filePath)).centerCrop().placeholder(R.drawable.placeholder).into(imageView);
+            Picasso.with(context).load(new File(filePath)).placeholder(R.drawable.placeholder).into(imageView);
         }
         else {
             Picasso.with(context).load(new File(filePath)).resize(resizeWidth, resizeHeight).centerCrop().placeholder(R.drawable.placeholder).into(imageView);

@@ -2,12 +2,9 @@ package com.snippet.snippet.controller;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.Toast;
 
+import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 import com.snippet.snippet.view.ImageViewerActivity;
 
 /**
@@ -17,22 +14,19 @@ import com.snippet.snippet.view.ImageViewerActivity;
 public class ImageViewOnClickListener implements View.OnClickListener {
 
     private Context mContext;
-    private int mFileId;
+    private PhotosRecyclerViewAdapter.ViewHolder mViewHolder;
 
-    public ImageViewOnClickListener(Context context, int fileId) {
+    public ImageViewOnClickListener(Context context, PhotosRecyclerViewAdapter.ViewHolder viewHolder) {
         mContext = context;
-        mFileId = fileId;
+        mViewHolder = viewHolder;
     }
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(mContext, "You have Clicked: " + ((ImageView) v).toString(), Toast.LENGTH_SHORT).show();
-        Bitmap image = ((BitmapDrawable)((ImageView) v).getDrawable()).getBitmap(); // b/c Bitmap implements Parcelable
-        // TODO Best practice dictates not passing the whole bitmap in the extras,
-        // should we just pass id and let image viewer reload from db?
+//        Toast.makeText(mContext, "You have Clicked: " + ((ImageView) v).toString(), Toast.LENGTH_SHORT).show();
+        String path = mViewHolder.getPath();
         Intent imageViewerIntent = new Intent(mContext, ImageViewerActivity.class);
-        imageViewerIntent.putExtra(ImageViewerActivity.FILEID_EXTRA_KEY, mFileId);
-        imageViewerIntent.putExtra(ImageViewerActivity.BITMAP_EXTRA_KEY, image);
+        imageViewerIntent.putExtra(ImageViewerActivity.FILEPATH_EXTRA_KEY, path);
         imageViewerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(imageViewerIntent);
     }
