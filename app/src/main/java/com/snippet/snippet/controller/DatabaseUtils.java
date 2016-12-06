@@ -339,4 +339,62 @@ public class DatabaseUtils {
         return paths;
     }
 
+    public static boolean getAutoTaggedFromFilePath(Context context, String filePath) {
+        boolean isAutoTagged = false;
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String[] projection = {
+                FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED
+        };
+
+        String selection = FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH + " = ?";
+        String[] selectionArgs = { filePath };
+
+        Cursor c = db.query(
+                FileDatabaseContract.FileDatabase.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+
+        c.moveToFirst();
+        int value = c.getInt(c.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED));
+
+        if(value != 0) {
+            isAutoTagged = true;
+        }
+
+        return isAutoTagged;
+    }
+
+    /**
+     * Updates the AutoTagged column in the row of the file given (if it is in the database)
+     * @param context The application context to fetch the database
+     * @param filePath The path of the file in the database to be updated
+     * @param newVal The new value for the AutoTagged column of the desired row in the table
+     * @return An integer indicating how many rows were effected. THIS SHOULD ALWAYS RETURN 1 (or zero if it was already set)
+     */
+    public static int setAutoTaggedFromFilePath(Context context, String filePath, boolean newVal) {
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED, newVal);
+
+        String selection = FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH + " = ?";
+        String[] selectionArgs = { filePath };
+
+        int count = db.update(
+                FileDatabaseContract.FileDatabase.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs
+        );
+
+        return count;
+    }
+
 }

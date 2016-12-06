@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -50,6 +51,9 @@ public class SnippetUtilsTest {
 
         assertTrue(paths.contains("Testing Path 1"));
         assertTrue(paths.contains("Testing Path 4"));
+        assertFalse(DatabaseUtils.getAutoTaggedFromFilePath(appContext, "Testing Path 1"));
+        assertTrue(DatabaseUtils.setAutoTaggedFromFilePath(appContext, "Testing Path 1", true) == 1);
+        assertTrue(DatabaseUtils.getAutoTaggedFromFilePath(appContext, "Testing Path 1"));
 
         DatabaseUtils.removeAllTables(appContext);
 //        assertTrue(true);
