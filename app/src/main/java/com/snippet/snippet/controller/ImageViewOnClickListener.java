@@ -33,6 +33,7 @@ public class ImageViewOnClickListener implements View.OnClickListener {
         Intent imageViewerIntent = new Intent(mContext, ImageViewerActivity.class);
         imageViewerIntent.putExtra(ImageViewerActivity.FILEID_EXTRA_KEY, mFileId);
         imageViewerIntent.putExtra(ImageViewerActivity.BITMAP_EXTRA_KEY, image);
+        imageViewerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(imageViewerIntent);
     }
 }
