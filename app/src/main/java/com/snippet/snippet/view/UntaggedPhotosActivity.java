@@ -21,6 +21,7 @@ import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 import com.snippet.snippet.controller.ImageUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,7 +55,7 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
         ArrayList<Integer> resourceIds = new ArrayList<>();
         untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, resourceIds, this.getApplicationContext()));
         paths = getIntent().getStringArrayListExtra(pathsExtraKey);
-        ArrayList<Bitmap> bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(50, paths.size()));
+        List<Bitmap> bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(50, paths.size()));
         // TODO again using all 0s for image ids until we actually know what to use
         resourceIds = new ArrayList<>(bitmaps.size());
         for (int i = 0; i < bitmaps.size(); i++) {
