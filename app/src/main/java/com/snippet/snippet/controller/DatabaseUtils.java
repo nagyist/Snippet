@@ -221,6 +221,163 @@ public class DatabaseUtils {
         
         return paths;
     }
+
+    /**
+     * Retrieves all of the filepaths from the database that are associated with the given tags
+     * @param context
+     * @param Tag
+     * @return
+     */
+    public static List<String> getImagePathsWithTag(Context context, List<String> Tag) {
+        List<String> paths = new ArrayList<>();
+        List<Integer> tagIDs = new ArrayList<>();
+        List<Integer> fileIDs = new ArrayList<>();
+
+        /* TAGS DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        // Gets the data repository in read mode
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] tagProjection = {
+                TagDatabaseContract.TagDatabase._ID
+        };
+
+        // Making the WHERE TagName = Tag statement
+        String tagSelection = TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME + " IN (";
+        String[] tagSelectionArgs = new String[Tag.size()];
+        for (int i = 0; i < Tag.size(); i++) {
+            tagSelectionArgs[i] = Tag.get(i);
+            if(i < Tag.size()-1) {
+                tagSelection += "?, ";
+            }
+            else {
+                tagSelection += "?)";
+            }
+        }
+
+        // Stort order of the resulting table from the query
+        String tagSortOrder = TagDatabaseContract.TagDatabase._ID + " DESC";
+
+        Cursor c1 = db.query(
+                TagDatabaseContract.TagDatabase.TABLE_NAME,
+                tagProjection,
+                tagSelection,
+                tagSelectionArgs,
+                null,
+                null,
+                tagSortOrder
+        );
+
+        c1.moveToFirst();
+        while(!c1.isAfterLast()) {
+            tagIDs.add(c1.getInt(
+                    c1.getColumnIndexOrThrow(TagDatabaseContract.TagDatabase._ID)
+            ));
+            c1.moveToNext();
+        }
+
+        c1.close();
+
+        /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] pairProjection = {
+                PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID
+        };
+
+        // Making the WHERE TagName = Tag statement
+        String pairSelection = PairDatabaseContract.PairDatabase.COLUMN_NAME_TAGID + " IN (";
+
+        String[] pairArgs = new String[tagIDs.size()];
+        for (int i = 0; i < tagIDs.size(); i++) {
+            pairArgs[i] = Integer.toString(tagIDs.get(i));
+            if(i < tagIDs.size()-1) {
+                pairSelection += "?, ";
+            }
+            else {
+                pairSelection += "?)";
+            }
+        }
+
+        String [] pairSelectionArgs = pairArgs;
+
+        // Stort order of the resulting table from the query
+        String pairSortOrder = PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + " DESC";
+
+        Cursor c2 = db.query(
+                PairDatabaseContract.PairDatabase.TABLE_NAME,
+                pairProjection,
+                pairSelection,
+                pairSelectionArgs,
+                null,
+                null,
+                pairSortOrder
+        );
+
+        c2.moveToFirst();
+        while(!c2.isAfterLast()) {
+            fileIDs.add(c2.getInt(
+                    c2.getColumnIndexOrThrow(PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID)
+            ));
+            c2.moveToNext();
+        }
+
+        c2.close();
+
+        /* FILES DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] fileProjection = {
+                FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH
+        };
+
+        // Making the WHERE TagName = Tag statement
+        String fileSelection = FileDatabaseContract.FileDatabase._ID + " IN (";
+
+        String[] fileArgs = new String[fileIDs.size()];
+        for (int i = 0; i < fileIDs.size(); i++) {
+            fileArgs[i] = Integer.toString(fileIDs.get(i));
+            if(i < fileIDs.size()-1) {
+                fileSelection += "?, ";
+            }
+            else {
+                fileSelection += "?)";
+            }
+        }
+
+        String [] fileSelectionArgs = fileArgs;
+
+        // Stort order of the resulting table from the query
+        String fileSortOrder = FileDatabaseContract.FileDatabase._ID + " DESC";
+
+        Cursor c3 = db.query(
+                FileDatabaseContract.FileDatabase.TABLE_NAME,
+                fileProjection,
+                fileSelection,
+                fileSelectionArgs,
+                null,
+                null,
+                fileSortOrder
+        );
+
+        c3.moveToFirst();
+        while(!c3.isAfterLast()) {
+            paths.add(c3.getString(
+                    c3.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH)
+            ));
+            c3.moveToNext();
+        }
+
+        c3.close();
+
+        db.close();
+
+        return paths;
+    }
     
     public static int getFileIDFromPath(Context context, String pathName) {
         int fileID;
