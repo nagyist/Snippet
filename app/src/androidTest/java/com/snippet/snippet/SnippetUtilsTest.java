@@ -49,12 +49,16 @@ public class SnippetUtilsTest {
 
         DatabaseUtils.addPairToDB(appContext, DatabaseUtils.getFileIDFromPath(appContext, "Testing Path 6"), DatabaseUtils.getTagIDFromTag(appContext, "Testing Tag 5"));
 
-        List<String> paths = DatabaseUtils.getImagePathsWithTag(appContext, "Testing Tag 1");
-        System.out.println("Number of paths using 'Testing Tag 1': " + paths.size());
+        List<String> paths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, "Testing Tag 1");
 
-        assertTrue(paths.size() == 2);
+        assertTrue(paths.size() == 1);
 
         assertTrue(paths.contains("Testing Path 1"));
+
+        paths = DatabaseUtils.getTaggedImagePathsWithTag(appContext, "Testing Tag 1");
+
+        assertTrue(paths.size() == 1);
+
         assertTrue(paths.contains("Testing Path 4"));
 
         ArrayList<String> tags = new ArrayList<String>();
@@ -127,6 +131,42 @@ public class SnippetUtilsTest {
         assertFalse(DatabaseUtils.getAutoTaggedFromFilePath(appContext, "Testing Path 1"));
         assertTrue(DatabaseUtils.setAutoTaggedFromFilePath(appContext, "Testing Path 1", true) == 1);
         assertTrue(DatabaseUtils.getAutoTaggedFromFilePath(appContext, "Testing Path 1"));
+
+        DatabaseUtils.removeAllTables(appContext);
+    }
+
+    @Test
+    public void testDatabaseUtils2() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        DatabaseUtils.removeAllTables(appContext);
+
+        List<String> filePaths = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            filePaths.add("Testing Path " + i);
+        }
+
+        DatabaseUtils.addFilePathsToDB(appContext, filePaths);
+
+        List<String> queriedPaths = DatabaseUtils.getAllFilePaths(appContext);
+
+        assertTrue(queriedPaths.size() == filePaths.size());
+
+        List<String> tags = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            tags.add("Test " + i);
+        }
+
+        DatabaseUtils.addTagToFilePath(appContext, tags, filePaths.get(4));
+        DatabaseUtils.addTagToFilePath(appContext, tags.get(8), filePaths.get(8));
+        DatabaseUtils.addTagToFilePath(appContext, tags.get(8), "Testing Path 15");
+
+        queriedPaths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, tags.get(8));
+
+        assertTrue(queriedPaths.size() == 3);
+        assertTrue(queriedPaths.contains("Testing Path 15"));
+        assertTrue(queriedPaths.contains(filePaths.get(8)));
+        assertTrue(queriedPaths.contains(filePaths.get(4)));
 
         DatabaseUtils.removeAllTables(appContext);
     }
