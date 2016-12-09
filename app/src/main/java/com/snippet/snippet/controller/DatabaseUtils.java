@@ -1830,13 +1830,6 @@ public class DatabaseUtils {
         return paths;
     }
 
-    public static void createDatabaseTables(Context context) {
-        DatabaseHelper helper = getDatabaseHelper(context);
-        SQLiteDatabase db = helper.getWritableDatabase();
-        helper.onCreate(db);
-        db.close();
-    }
-
     public static List<String> getImagePathsWithTags(Context context) {
         List<String> paths = new ArrayList<>();
 
@@ -1857,7 +1850,18 @@ public class DatabaseUtils {
         c.close();
         db.close();
 
+        c.close();
+        db.close();
+
         return paths;
     }
+
+    public static void createDatabaseTables(Context context) {
+        DatabaseHelper helper = getDatabaseHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        helper.onCreate(db);
+        db.close();
+    }
+
 }
 
