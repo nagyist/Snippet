@@ -224,7 +224,7 @@ public class DatabaseUtils {
             ));
             c1.moveToNext();
         }
-        
+
         c1.close();
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
@@ -335,7 +335,7 @@ public class DatabaseUtils {
         c3.close();
 
         db.close();
-        
+
         return paths;
     }
 
@@ -728,7 +728,7 @@ public class DatabaseUtils {
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
         String[] projection = {
-            FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH
+                FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH
         };
 
         String selection = FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED + " = ?";
