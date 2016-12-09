@@ -186,7 +186,6 @@ public class DatabaseUtils {
      * @param Tag The tag you wish to search by
      * @return A list of file paths as strings
      */
-    @Deprecated
     public static List<String> getImagePathsWithTag(Context context, String Tag) {
         List<String> paths = new ArrayList<>();
         List<Integer> tagIDs = new ArrayList<>();
@@ -353,7 +352,6 @@ public class DatabaseUtils {
      * @param Tag
      * @return
      */
-    @Deprecated
     public static List<String> getImagePathsWithTag(Context context, List<String> Tag) {
         List<String> paths = new ArrayList<>();
         List<Integer> tagIDs = new ArrayList<>();
@@ -1731,6 +1729,27 @@ public class DatabaseUtils {
         return tags;
     }
 
+    public static List<String> getImagePathsWithoutTags(Context context) {
+        List<String> paths = new ArrayList<>();
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String rawQuery = "SELECT " + FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH +
+                " FROM " + FileDatabaseContract.FileDatabase.TABLE_NAME  +
+                " WHERE " + FileDatabaseContract.FileDatabase._ID + " NOT IN " +
+                "(SELECT " + PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + " FROM " + PairDatabaseContract.PairDatabase.TABLE_NAME + ");";
+
+        Cursor c = db.rawQuery(rawQuery, null);
+
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            paths.add(c.getString(c.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH)));
+            c.moveToNext();
+        }
+
+        return paths;
+    }
+
     public static List<String> getUntaggedImagePathsWithoutTags(Context context) {
         List<String> paths = new ArrayList<>();
 
@@ -1775,4 +1794,24 @@ public class DatabaseUtils {
         return paths;
     }
 
+    public static List<String> getImagePathsWithTags(Context context) {
+        List<String> paths = new ArrayList<>();
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String rawQuery = "SELECT " + FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH +
+                " FROM " + FileDatabaseContract.FileDatabase.TABLE_NAME  +
+                " WHERE " + FileDatabaseContract.FileDatabase._ID + " IN " +
+                "(SELECT " + PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + " FROM " + PairDatabaseContract.PairDatabase.TABLE_NAME + ");";
+
+        Cursor c = db.rawQuery(rawQuery, null);
+
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            paths.add(c.getString(c.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH)));
+            c.moveToNext();
+        }
+
+        return paths;
+    }
 }

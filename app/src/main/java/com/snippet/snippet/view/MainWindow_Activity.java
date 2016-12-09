@@ -27,6 +27,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.DatabaseUtils;
@@ -36,6 +39,7 @@ import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -55,9 +59,14 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
+    @BindView(R.id.untaggedPhotosLayout) LinearLayout untaggedPhotosLayout;
+    @BindView(R.id.taggedPhotosLabel) TextView taggedPhotosLabel;
+    @BindView(R.id.taggedPhotosDivider) View taggedPhotosDivider;
     @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
     @BindView(R.id.progressBar) ContentLoadingProgressBar progressBar;
     @BindView(R.id.untaggedPhotosButton) Button untaggedPhotosButton;
+    @BindView(R.id.mainSearchBar) EditText searchBar;
+    @BindView(R.id.mainSearchButton) Button searchButton;
 
     private String tagToSearch = "";
 
@@ -117,6 +126,13 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
                 ArrayList<String> paths = new ArrayList<>(((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).getDataset());
                 intent.putExtra(UntaggedPhotosActivity.pathsExtraKey, paths);
                 startActivity(intent);
+            }
+        });
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainWindow_Activity.this.doSearch(searchBar.getText().toString());
             }
         });
 
@@ -210,6 +226,23 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         }
     }
 
+    private void doSearch(String searched) {
+        List<String> paths;
+        if (! (searched.equals(""))) {
+            untaggedPhotosLayout.setVisibility(View.GONE);
+            taggedPhotosLabel.setVisibility(View.GONE);
+            taggedPhotosDivider.setVisibility(View.GONE);
+            String[] terms = searched.split("\\s+"); // regex for platform-independent space
+            paths = DatabaseUtils.getImagePathsWithTag(this, Arrays.asList(terms));
+        } else {
+            untaggedPhotosLayout.setVisibility(View.VISIBLE);
+            taggedPhotosLabel.setVisibility(View.VISIBLE);
+            taggedPhotosDivider.setVisibility(View.VISIBLE);
+            paths = DatabaseUtils.getImagePathsWithTags(this);
+        }
+        ((PhotosRecyclerViewAdapter) taggedPhotosRecyclerView.getAdapter()).replaceDataset(paths);
+    }
+
     private List<String> getImagePaths() {
         List<String> paths = DatabaseUtils.getAllFilePaths(this);
         if(paths.size() == 0) {
@@ -224,22 +257,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
 
         @Override
         protected Pair<List<String>, List<String>> doInBackground(String... params) {
-            List<String> paths = new ArrayList<>();
-//            for (int i = 0; i < params.length; i++) {
-//                paths = getImagePaths();
-//            }
-            /*switch(params[0]) {
-                case TAG_UNTAGGEDPHOTOS:
-                    paths = DatabaseUtils.getUntaggedImagesFromDB(MainWindow_Activity.this);
-                    break;
-                case TAG_TAGGEDPHOTOS:
-                    paths = getImagePaths(); //DatabaseUtils.getTaggedImagesFromDB(MainWindow_Activity.this);
-                    break;
-                case TAG_HIDDENPHOTOS:
-                    // TODO not implemented yet
-                    //paths = DatabaseUtils.getHiddenImagesFromDB(MainWindow_Activity.this);
-            }*/
-            paths = getImagePaths();
+            List<String> paths = getImagePaths();
             // TODO hack hard coding the various recycler view tags into the async call.
             // So change it when the hidden one exists (if ever)
             List<String> viewTags = new ArrayList<>();
@@ -255,10 +273,10 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
                 // TODO recycler view tags hardcoded in here as well
                 switch(tag) {
                     case TAG_UNTAGGEDPHOTOS:
-                        paths = DatabaseUtils.getUntaggedImagesFromDB(MainWindow_Activity.this);
+                        paths = DatabaseUtils.getImagePathsWithoutTags(MainWindow_Activity.this);
                         break;
                     case TAG_TAGGEDPHOTOS:
-                        paths = DatabaseUtils.getTaggedImagesFromDB(MainWindow_Activity.this);
+                        paths = DatabaseUtils.getImagePathsWithTags(MainWindow_Activity.this);
                         break;
                 }
                 updateRecyclerView(tag, paths);
