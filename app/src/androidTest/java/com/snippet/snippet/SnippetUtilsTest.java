@@ -158,17 +158,20 @@ public class SnippetUtilsTest {
         }
 
         DatabaseUtils.addTagToFilePath(appContext, tags, filePaths.get(4));
+        DatabaseUtils.addTagToFilePath(appContext, tags, "Testing Path 16");
         DatabaseUtils.addTagToFilePath(appContext, tags.get(8), filePaths.get(8));
         DatabaseUtils.addTagToFilePath(appContext, tags.get(8), "Testing Path 15");
 
         queriedPaths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, tags.get(8));
 
-        assertTrue(queriedPaths.size() == 3);
+        assertTrue(queriedPaths.size() == 4);
         assertTrue(queriedPaths.contains("Testing Path 15"));
+        assertTrue(queriedPaths.contains("Testing Path 16"));
         assertTrue(queriedPaths.contains(filePaths.get(8)));
         assertTrue(queriedPaths.contains(filePaths.get(4)));
 
         DatabaseUtils.removeTagFromImage(appContext, filePaths.get(4), tags.get(8));
+        DatabaseUtils.removeTagFromImage(appContext, "Testing Path 16", tags.get(8));
 
         queriedPaths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, tags.get(8));
 
@@ -179,12 +182,15 @@ public class SnippetUtilsTest {
 
         queriedPaths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, tags.get(5));
 
-        assertTrue(queriedPaths.size() == 1);
+        assertTrue(queriedPaths.size() == 2);
         assertFalse(queriedPaths.contains("Testing Path 15"));
         assertFalse(queriedPaths.contains(filePaths.get(8)));
         assertTrue(queriedPaths.contains(filePaths.get(4)));
+        assertTrue(queriedPaths.contains("Testing Path 16"));
 
         DatabaseUtils.removeTagFromImage(appContext, filePaths.get(4), tags);
+
+        DatabaseUtils.removeTagFromImage(appContext, "Testing Path 16", tags);
 
         queriedPaths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, tags.get(5));
 

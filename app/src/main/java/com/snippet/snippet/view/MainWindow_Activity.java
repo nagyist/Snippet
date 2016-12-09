@@ -3,13 +3,16 @@ package com.snippet.snippet.view;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
@@ -24,13 +27,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.DatabaseUtils;
 import com.snippet.snippet.controller.ImageUtils;
 import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,8 +70,8 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainWindow_Activity.this, "Camera Button", Toast.LENGTH_SHORT).show();
                 requestCameraPermissions();
+                dispatchTakePictureIntent();
             }
         });
 
@@ -224,5 +228,28 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         super.onPause();
         Bundle savedInstanceState = new Bundle();
 
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = ImageUtils.createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.snippet.snippet",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, ImageUtils.REQUEST_IMAGE_CAPTURE);
+            }
+        }
     }
 }

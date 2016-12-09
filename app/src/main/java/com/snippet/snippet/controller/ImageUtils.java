@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.widget.ImageView;
@@ -16,7 +17,10 @@ import com.snippet.snippet.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +28,9 @@ import java.util.List;
  */
 
 public class ImageUtils {
+
+    public static final int REQUEST_IMAGE_CAPTURE = 500;
+    private static String mCurrentPhotoPath = "";
 
     public static List<String> getImagesPath(Activity activity) {
         Uri uri;
@@ -83,6 +90,24 @@ public class ImageUtils {
         else {
             Picasso.with(context).load(new File(filePath)).resize(resizeWidth, resizeHeight).centerCrop().placeholder(R.drawable.placeholder).into(imageView);
         }
+    }
+
+    public static File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+//        File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = new File(Environment.getExternalStorageDirectory(), "Snippet");
+        storageDir.mkdirs();
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
 }
