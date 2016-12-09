@@ -1,6 +1,7 @@
 package com.snippet.snippet.view;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -48,6 +49,10 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     public static final int PERMISSION_CAMERA = 1002;
     private String currentPhotoPath = "";
 
+    private List<String> paths;
+
+    private Context context;
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
     @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
@@ -59,6 +64,8 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
+
         setContentView(R.layout.activity_main_window_);
         /*USE THE BINDVIEW ANNOTATION INSTEAD OF FIND VIEW BY ID. THIS WILL MAKE OUR CODE CLEANER
         * THANKS TO BUTTERKNIFE*/

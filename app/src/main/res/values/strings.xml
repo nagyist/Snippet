@@ -13,4 +13,9 @@
     <string name="Untagged_Photos">Untagged Photos</string>
     <string name="Tagged_Photos">Tagged Photos</string>
     <string name="Hidden_Photos">Hidden Photos</string>
+
+    <string name="Autotag_Dialog_Message">Would you like this photo to be automatically tagged?</string>
+    <string name="Autotag_Dialog_Title">Auto Tag Photo</string>
+    <string name="Autotag_Dialog_Yes">Yes</string>
+    <string name="Autotag_Dialog_No">No</string>
 </resources>
