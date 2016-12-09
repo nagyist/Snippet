@@ -246,4 +246,43 @@ public class SnippetUtilsTest {
 
         DatabaseUtils.removeAllTables(appContext);
     }
+
+    @Test
+    public void testDatabaseUtils3() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        DatabaseUtils.removeAllTables(appContext);
+
+        List<String> filePaths = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            filePaths.add("Testing Path " + i);
+            DatabaseUtils.addFilePathToDB(appContext, "Testing Path " + i, i%2 == 0);
+        }
+
+        List<String> queriedPaths = DatabaseUtils.getUntaggedImagePathsWithoutTags(appContext);
+
+        assertTrue(queriedPaths.size() == 5);
+        for(int i = 0; i < 10; i++) {
+            if(i%2 == 0) {
+                assertFalse(queriedPaths.contains("Testing Path " + i));
+            }
+            else {
+                assertTrue(queriedPaths.contains("Testing Path " + i));
+            }
+        }
+
+        queriedPaths = DatabaseUtils.getTaggedImagePathsWithoutTags(appContext);
+
+        assertTrue(queriedPaths.size() == 5);
+        for(int i = 0; i < 10; i++) {
+            if(i%2 == 0) {
+                assertTrue(queriedPaths.contains("Testing Path " + i));
+            }
+            else {
+                assertFalse(queriedPaths.contains("Testing Path " + i));
+            }
+        }
+
+        DatabaseUtils.removeAllTables(appContext);
+    }
 }

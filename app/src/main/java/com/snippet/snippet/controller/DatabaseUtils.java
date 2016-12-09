@@ -129,6 +129,10 @@ public class DatabaseUtils {
 
         try {
             fileID = getFileIDFromPath(context, filePath);
+            if(fileID == -1) {
+                addFilePathToDB(context, filePath, false);
+                fileID = getFileIDFromPath(context, filePath);
+            }
         }
         catch (Exception e) {
             addFilePathToDB(context, filePath, false);
@@ -161,6 +165,10 @@ public class DatabaseUtils {
 
         try {
             fileID = getFileIDFromPath(context, filePath);
+            if(fileID == -1) {
+                addFilePathToDB(context, filePath, false);
+                fileID = getFileIDFromPath(context, filePath);
+            }
         }
         catch (Exception e) {
             addFilePathToDB(context, filePath, false);
@@ -1721,6 +1729,50 @@ public class DatabaseUtils {
         }
 
         return tags;
+    }
+
+    public static List<String> getUntaggedImagePathsWithoutTags(Context context) {
+        List<String> paths = new ArrayList<>();
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String rawQuery = "SELECT " + FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH +
+                " FROM " + FileDatabaseContract.FileDatabase.TABLE_NAME  +
+                " WHERE " + FileDatabaseContract.FileDatabase._ID + " NOT IN " +
+                "(SELECT " + PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + " FROM " + PairDatabaseContract.PairDatabase.TABLE_NAME + ") AND " +
+                FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED + " = 0;";
+
+        Cursor c = db.rawQuery(rawQuery, null);
+
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            paths.add(c.getString(c.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH)));
+            c.moveToNext();
+        }
+
+        return paths;
+    }
+
+    public static List<String> getTaggedImagePathsWithoutTags(Context context) {
+        List<String> paths = new ArrayList<>();
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String rawQuery = "SELECT " + FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH +
+                " FROM " + FileDatabaseContract.FileDatabase.TABLE_NAME  +
+                " WHERE " + FileDatabaseContract.FileDatabase._ID + " NOT IN " +
+                "(SELECT " + PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + " FROM " + PairDatabaseContract.PairDatabase.TABLE_NAME + ") AND " +
+                FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED + " = 1;";
+
+        Cursor c = db.rawQuery(rawQuery, null);
+
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            paths.add(c.getString(c.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH)));
+            c.moveToNext();
+        }
+
+        return paths;
     }
 
 }
