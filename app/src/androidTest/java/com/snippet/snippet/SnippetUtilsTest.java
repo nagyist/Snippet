@@ -168,6 +168,76 @@ public class SnippetUtilsTest {
         assertTrue(queriedPaths.contains(filePaths.get(8)));
         assertTrue(queriedPaths.contains(filePaths.get(4)));
 
+        DatabaseUtils.removeTagFromImage(appContext, filePaths.get(4), tags.get(8));
+
+        queriedPaths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, tags.get(8));
+
+        assertTrue(queriedPaths.size() == 2);
+        assertTrue(queriedPaths.contains("Testing Path 15"));
+        assertTrue(queriedPaths.contains(filePaths.get(8)));
+        assertFalse(queriedPaths.contains(filePaths.get(4)));
+
+        queriedPaths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, tags.get(5));
+
+        assertTrue(queriedPaths.size() == 1);
+        assertFalse(queriedPaths.contains("Testing Path 15"));
+        assertFalse(queriedPaths.contains(filePaths.get(8)));
+        assertTrue(queriedPaths.contains(filePaths.get(4)));
+
+        DatabaseUtils.removeTagFromImage(appContext, filePaths.get(4), tags);
+
+        queriedPaths = DatabaseUtils.getUntaggedImagePathsWithTag(appContext, tags.get(5));
+
+        assertTrue(queriedPaths.size() == 0);
+        assertFalse(queriedPaths.contains("Testing Path 15"));
+        assertFalse(queriedPaths.contains(filePaths.get(8)));
+        assertFalse(queriedPaths.contains(filePaths.get(4)));
+
+        DatabaseUtils.addTagToDB(appContext, "APPLES");
+        DatabaseUtils.addTagToDB(appContext, "APRICOTS");
+        DatabaseUtils.addTagToDB(appContext, "AIRPLANES");
+        DatabaseUtils.addTagToDB(appContext, "APPLAUSE");
+
+        List<String> tagsFromPartial = DatabaseUtils.getTagsFromPartialQuery(appContext, "A");
+
+        assertTrue(tagsFromPartial.size() == 4);
+        assertTrue(tagsFromPartial.contains("APPLES"));
+        assertTrue(tagsFromPartial.contains("APRICOTS"));
+        assertTrue(tagsFromPartial.contains("AIRPLANES"));
+        assertTrue(tagsFromPartial.contains("APPLAUSE"));
+
+        tagsFromPartial = DatabaseUtils.getTagsFromPartialQuery(appContext, "AP");
+
+        assertTrue(tagsFromPartial.size() == 3);
+        assertTrue(tagsFromPartial.contains("APPLES"));
+        assertTrue(tagsFromPartial.contains("APRICOTS"));
+        assertFalse(tagsFromPartial.contains("AIRPLANES"));
+        assertTrue(tagsFromPartial.contains("APPLAUSE"));
+
+        tagsFromPartial = DatabaseUtils.getTagsFromPartialQuery(appContext, "APP");
+
+        assertTrue(tagsFromPartial.size() == 2);
+        assertTrue(tagsFromPartial.contains("APPLES"));
+        assertFalse(tagsFromPartial.contains("APRICOTS"));
+        assertFalse(tagsFromPartial.contains("AIRPLANES"));
+        assertTrue(tagsFromPartial.contains("APPLAUSE"));
+
+        tagsFromPartial = DatabaseUtils.getTagsFromPartialQuery(appContext, "APPLA");
+
+        assertTrue(tagsFromPartial.size() == 1);
+        assertFalse(tagsFromPartial.contains("APPLES"));
+        assertFalse(tagsFromPartial.contains("APRICOTS"));
+        assertFalse(tagsFromPartial.contains("AIRPLANES"));
+        assertTrue(tagsFromPartial.contains("APPLAUSE"));
+
+        tagsFromPartial = DatabaseUtils.getTagsFromPartialQuery(appContext, "APPLAT");
+
+        assertTrue(tagsFromPartial.size() == 0);
+        assertFalse(tagsFromPartial.contains("APPLES"));
+        assertFalse(tagsFromPartial.contains("APRICOTS"));
+        assertFalse(tagsFromPartial.contains("AIRPLANES"));
+        assertFalse(tagsFromPartial.contains("APPLAUSE"));
+
         DatabaseUtils.removeAllTables(appContext);
     }
 }
