@@ -1859,6 +1859,6 @@ public class DatabaseUtils {
         helper.onCreate(db);
         db.close();
     }
-    
+
 }
 
