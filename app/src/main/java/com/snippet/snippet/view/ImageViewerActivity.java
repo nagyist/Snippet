@@ -122,6 +122,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         public void onReceiveTags(List<String> tags) {
             //Update the tags in the database
             DatabaseUtils.addTagToFilePath(ImageViewerActivity.this, tags, mFilePath);
+            DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, true);
         }
     };
 

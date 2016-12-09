@@ -2,7 +2,6 @@ package com.snippet.snippet.view;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,7 +17,6 @@ import android.widget.Toast;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.DatabaseUtils;
-import com.snippet.snippet.controller.ImageUtils;
 import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 
 import java.util.ArrayList;

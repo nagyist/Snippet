@@ -93,7 +93,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         });
 
         //TODO remove this for final deliverable as this is only for debugging purposes
-        DatabaseUtils.removeAllTables(this);
+//        DatabaseUtils.removeAllTables(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
