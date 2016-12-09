@@ -12,7 +12,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
@@ -244,12 +243,29 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.snippet.snippet",
-                        photoFile);
+                Uri photoURI = Uri.fromFile(photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, ImageUtils.REQUEST_IMAGE_CAPTURE);
+                new TakePictureUpdateViews().execute(photoFile.getAbsolutePath());
             }
+        }
+    }
+
+    protected class TakePictureUpdateViews extends AsyncTask<String, Integer, List<String>> {
+
+        @Override
+        protected List<String> doInBackground(String... params) {
+            List<String> paths = new ArrayList<>();
+            DatabaseUtils.addFilePathToDB(getApplicationContext(), params[0], false);
+
+            paths = DatabaseUtils.getUntaggedImagesFromDB(getApplicationContext());
+
+            return paths;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result) {
+            updateRecyclerView(TAG_UNTAGGEDPHOTOS, result);
         }
     }
 }
