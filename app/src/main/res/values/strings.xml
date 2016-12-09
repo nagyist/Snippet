@@ -10,6 +10,7 @@
 
     <string name="addmanagetags">Add/Manage Tags</string>
 
+    <string name="search">Search</string>
     <string name="Untagged_Photos">Untagged Photos</string>
     <string name="Tagged_Photos">Tagged Photos</string>
     <string name="Hidden_Photos">Hidden Photos</string>
