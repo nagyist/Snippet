@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.snippet.snippet.R;
@@ -84,6 +85,7 @@ public class ImageUtils {
      * @param resizeHeight The new height you want the image to be to reduce momory costs (NULL IF THERE IS NO CHANGE TO THE IMAGE)
      */
     public static void addImageToImageView(Context context, ImageView imageView, String filePath, Integer resizeWidth, Integer resizeHeight) {
+//        Log.d("DEBUG File Path", "File Path is: " + filePath);
         if(resizeHeight == null || resizeWidth == null) {
             Picasso.with(context).load(new File(filePath)).placeholder(R.drawable.placeholder).into(imageView);
         }
@@ -97,13 +99,15 @@ public class ImageUtils {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
 //        File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File storageDir = new File(Environment.getExternalStorageDirectory(), "Snippet");
+        File storageDir = new File(Environment.getExternalStorageDirectory(), "Pictures/Snippet");
         storageDir.mkdirs();
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
+
+        Log.d("DEBUG File Path", "File Path is: " + image.getAbsolutePath());
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();

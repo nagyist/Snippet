@@ -46,6 +46,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     private static final String TAG_TAGGEDPHOTOS = "TAGGED";
     private static final String TAG_HIDDENPHOTOS = "HIDDEN";
     public static final int PERMISSION_CAMERA = 1002;
+    private String currentPhotoPath = "";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
@@ -113,6 +114,13 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         });
 
         new AsyncImageLogicPaths().execute();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ImageUtils.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            new TakePictureUpdateViews().execute(currentPhotoPath);
+        }
     }
 
     public void requestCameraPermissions() {
@@ -275,7 +283,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
                 Uri photoURI = Uri.fromFile(photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, ImageUtils.REQUEST_IMAGE_CAPTURE);
-                new TakePictureUpdateViews().execute(photoFile.getAbsolutePath());
+                currentPhotoPath = photoFile.getAbsolutePath();
             }
         }
     }
@@ -294,6 +302,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
 
         @Override
         protected void onPostExecute(List<String> result) {
+            currentPhotoPath = "";
             updateRecyclerView(TAG_UNTAGGEDPHOTOS, result);
         }
     }

@@ -18,6 +18,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     public static final String FILEPATH_EXTRA_KEY = "snippet/file_path";
     public static final String BITMAP_EXTRA_KEY = "snippet/bitmap";
+    public static final int MAX_RESOLUTION = 4096;
 
     @BindView(R.id.bigImageView) ImageView mImageView;
     @BindView(R.id.addManageTagsBtn) Button tagsButton;
