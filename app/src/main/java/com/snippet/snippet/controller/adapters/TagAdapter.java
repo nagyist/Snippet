@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.snippet.snippet.R;
+
 import org.w3c.dom.Text;
 
 import java.util.List;
@@ -51,10 +53,12 @@ public class TagAdapter extends BaseAdapter {
             textView = new TextView(context);
             removeButton = new Button(context);
             removeButton.setText("X");
+            textView.setTextColor(context.getResources().getColor(R.color.colorWhite));
+            linearLayout.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
             linearLayout.addView(textView);
             linearLayout.addView(removeButton);
             linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-            textView.setPadding(8,8,8,8);
+            linearLayout.setPadding(8,8,8,8);
         } else {
             linearLayout = (LinearLayout) convertView;
             textView = (TextView) linearLayout.getChildAt(0);

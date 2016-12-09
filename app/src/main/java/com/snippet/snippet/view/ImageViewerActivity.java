@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.snippet.snippet.R;
@@ -40,6 +41,8 @@ public class ImageViewerActivity extends AppCompatActivity {
     @BindView(R.id.bigImageView) ImageView mImageView;
     @BindView(R.id.addManageTagsBtn) Button tagsButton;
     @BindView(R.id.tagGrid) GridView gridView;
+    @BindView(R.id.layoutTags) LinearLayout layoutTagsView;
+    @BindView(R.id.buttonCloseTags) Button closeTagsButton;
 
     AlertDialog autoTagDialog;
 
@@ -84,10 +87,18 @@ public class ImageViewerActivity extends AppCompatActivity {
                 List<String> tags = DatabaseUtils.getTagsFromFilePath(ImageViewerActivity.this, mFilePath);
 
                 gridView.setAdapter(new TagAdapter(ImageViewerActivity.this, tags));
-                gridView.setVisibility(View.VISIBLE);
+                layoutTagsView.setVisibility(View.VISIBLE);
+                //gridView.setVisibility(View.VISIBLE);
                 for(String tag: tags) {
                     Log.d("Tags Available", mFilePath+": "+tag);
                 }
+            }
+        });
+
+        closeTagsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layoutTagsView.setVisibility(View.GONE);
             }
         });
     }
@@ -126,8 +137,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         builder.setNegativeButton(R.string.Autotag_Dialog_No, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(ImageViewerActivity.this, "You clicked No", Toast.LENGTH_SHORT).show();
-                //Set appropriate flag in database
-                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, false);
+                //Don't do anything, because we want the user to tag images
             }
         });
         autoTagDialog = builder.create();

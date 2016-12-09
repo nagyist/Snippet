@@ -10,6 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.snippet.snippet.view.ImageViewerActivity">
+    <!-- Frame layout to display tags over the image -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,15 +31,54 @@
             android:id="@+id/addManageTagsBtn" />
     </LinearLayout>
 
-    <GridView
-        android:id="@+id/tagGrid"
+    <LinearLayout
+        android:id="@+id/layoutTags"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:visibility="gone"
-        android:numColumns="2"
-        android:layout_gravity="bottom|center"
-        />
+        android:orientation="vertical"
+        android:visibility="gone">
+        <!-- Fake layout to only show the tags on half of the screen -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:background="@color/blackTransparent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/buttonAddTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add"
+                    />
+                <Button
+                    android:id="@+id/buttonCloseTags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="close"/>
+            </LinearLayout>
+            <GridView
+                android:id="@+id/tagGrid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:numColumns="2"
+                android:layout_gravity="bottom|center"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+
 
 
 </FrameLayout>
