@@ -1850,9 +1850,6 @@ public class DatabaseUtils {
         c.close();
         db.close();
 
-        c.close();
-        db.close();
-
         return paths;
     }
 
@@ -1862,6 +1859,6 @@ public class DatabaseUtils {
         helper.onCreate(db);
         db.close();
     }
-
+    
 }
 
