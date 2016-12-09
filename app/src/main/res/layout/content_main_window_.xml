@@ -75,7 +75,10 @@
                 android:text="@string/goto_button_tag"
                 android:textAlignment="viewStart"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:focusableInTouchMode="true">
+                <requestFocus/>
+            </Button>
 
         </RelativeLayout>
 
