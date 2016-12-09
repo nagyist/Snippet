@@ -224,7 +224,7 @@ public class DatabaseUtils {
             ));
             c1.moveToNext();
         }
-        
+
         c1.close();
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
@@ -335,7 +335,7 @@ public class DatabaseUtils {
         c3.close();
 
         db.close();
-        
+
         return paths;
     }
 
@@ -516,10 +516,10 @@ public class DatabaseUtils {
      * Retrieves The fileID from the Files table with the given file path
      * @param context The application context needed to use the database helper
      * @param pathName The file path you want the ID for
-     * @return The ID for the given path
+     * @return The ID for the given path or -1 if no ID was found
      */
     public static int getFileIDFromPath(Context context, String pathName) {
-        int fileID;
+        int fileID = -1;
 
         // Gets the data repository in read mode
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
@@ -548,7 +548,9 @@ public class DatabaseUtils {
         );
 
         c1.moveToFirst();
-        fileID = c1.getInt(c1.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase._ID));
+        if(!c1.isAfterLast()) {
+            fileID = c1.getInt(c1.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase._ID));
+        }
 
         c1.close();
 
@@ -726,7 +728,7 @@ public class DatabaseUtils {
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
         String[] projection = {
-            FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH
+                FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH
         };
 
         String selection = FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED + " = ?";
