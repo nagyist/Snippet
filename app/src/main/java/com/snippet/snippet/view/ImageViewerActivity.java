@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import com.snippet.snippet.R;
 import com.snippet.snippet.controller.DatabaseUtils;
 import com.snippet.snippet.controller.TagListener;
 import com.snippet.snippet.controller.adapters.ClarifAIHelper;
+import com.snippet.snippet.controller.adapters.TagAdapter;
 import com.snippet.snippet.model.DatabaseHelper;
 
 import java.util.List;
@@ -37,6 +39,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     @BindView(R.id.bigImageView) ImageView mImageView;
     @BindView(R.id.addManageTagsBtn) Button tagsButton;
+    @BindView(R.id.tagGrid) GridView gridView;
 
     AlertDialog autoTagDialog;
 
@@ -78,7 +81,13 @@ public class ImageViewerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(ImageViewerActivity.this, "Tags Button", Toast.LENGTH_SHORT).show();
+                List<String> tags = DatabaseUtils.getTagsFromFilePath(ImageViewerActivity.this, mFilePath);
 
+                gridView.setAdapter(new TagAdapter(ImageViewerActivity.this, tags));
+                gridView.setVisibility(View.VISIBLE);
+                for(String tag: tags) {
+                    Log.d("Tags Available", mFilePath+": "+tag);
+                }
             }
         });
     }
