@@ -1770,10 +1770,12 @@ public class DatabaseUtils {
         Cursor c = db.rawQuery(rawQuery, null);
 
         c.moveToFirst();
-        while (!c.isAfterLast()) {
+        while(!c.isAfterLast()) {
             paths.add(c.getString(c.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH)));
             c.moveToNext();
         }
+        c.close();
+        db.close();
 
         return paths;
     }
@@ -1828,20 +1830,27 @@ public class DatabaseUtils {
         return paths;
     }
 
+    public static void createDatabaseTables(Context context) {
+        DatabaseHelper helper = getDatabaseHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        helper.onCreate(db);
+        db.close();
+    }
+
     public static List<String> getImagePathsWithTags(Context context) {
         List<String> paths = new ArrayList<>();
 
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
         String rawQuery = "SELECT " + FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH +
-                " FROM " + FileDatabaseContract.FileDatabase.TABLE_NAME +
+                " FROM " + FileDatabaseContract.FileDatabase.TABLE_NAME  +
                 " WHERE " + FileDatabaseContract.FileDatabase._ID + " IN " +
                 "(SELECT " + PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + " FROM " + PairDatabaseContract.PairDatabase.TABLE_NAME + ");";
 
         Cursor c = db.rawQuery(rawQuery, null);
 
         c.moveToFirst();
-        while (!c.isAfterLast()) {
+        while(!c.isAfterLast()) {
             paths.add(c.getString(c.getColumnIndexOrThrow(FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH)));
             c.moveToNext();
         }
@@ -1850,12 +1859,5 @@ public class DatabaseUtils {
 
         return paths;
     }
-
-    public static void createDatabaseTables(Context context) {
-        DatabaseHelper helper = getDatabaseHelper(context);
-        SQLiteDatabase db = helper.getWritableDatabase();
-        helper.onCreate(db);
-        db.close();
-    }
-
 }
+
