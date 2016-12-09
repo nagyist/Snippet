@@ -186,6 +186,11 @@ public class DatabaseUtils {
 
         /* TAGS DATABASE QUERY */////////////////////////////////////////////////////////////////
 
+        //if no tag, return empty list
+        if(Tag == null) {
+            return paths;
+        }
+
         // Gets the data repository in read mode
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
@@ -223,6 +228,11 @@ public class DatabaseUtils {
         c1.close();
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if no tagIDs, return empty list
+        if(tagIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -273,6 +283,11 @@ public class DatabaseUtils {
         c2.close();
 
         /* FILES DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if no fileIDs, return empty list
+        if(fileIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -330,12 +345,18 @@ public class DatabaseUtils {
      * @param Tag
      * @return
      */
+    @Deprecated
     public static List<String> getImagePathsWithTag(Context context, List<String> Tag) {
         List<String> paths = new ArrayList<>();
         List<Integer> tagIDs = new ArrayList<>();
         List<Integer> fileIDs = new ArrayList<>();
 
         /* TAGS DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if no tags, return empty list
+        if(Tag.size() == 0) {
+            return paths;
+        }
 
         // Gets the data repository in read mode
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
@@ -384,6 +405,11 @@ public class DatabaseUtils {
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
 
+        //if tagIDs empty, return empty list
+        if(tagIDs.size() == 0) {
+            return paths;
+        }
+
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] pairProjection = {
@@ -430,6 +456,11 @@ public class DatabaseUtils {
         c2.close();
 
         /* FILES DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if fileIDs empty, return empty list
+        if(fileIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -735,6 +766,11 @@ public class DatabaseUtils {
 
         /* TAGS DATABASE QUERY */////////////////////////////////////////////////////////////////
 
+        //if no tags to search, return empty list
+        if(Tag.size() == 0) {
+            return paths;
+        }
+
         // Gets the data repository in read mode
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
@@ -782,6 +818,11 @@ public class DatabaseUtils {
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
 
+        //if no tagIDs, return empty list
+        if(tagIDs.size() == 0) {
+            return paths;
+        }
+
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] pairProjection = {
@@ -828,6 +869,11 @@ public class DatabaseUtils {
         c2.close();
 
         /* FILES DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if no fileIDs, return empty list
+        if(fileIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -893,6 +939,11 @@ public class DatabaseUtils {
 
         /* TAGS DATABASE QUERY */////////////////////////////////////////////////////////////////
 
+        //if Tag is null, return empty list
+        if(Tag == null) {
+            return paths;
+        }
+
         // Gets the data repository in read mode
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
@@ -930,6 +981,11 @@ public class DatabaseUtils {
         c1.close();
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //If no tagIDs exists, return empty list
+        if(tagIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -978,6 +1034,11 @@ public class DatabaseUtils {
 
         /* FILES DATABASE QUERY */////////////////////////////////////////////////////////////////
 
+        //If there are no files, just return the empty list
+        if(fileIDs.size() == 0) {
+            return paths;
+        }
+
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] fileProjection = {
@@ -991,7 +1052,7 @@ public class DatabaseUtils {
         fileArgs[0] = "0";
         for (int i = 1; i < fileIDs.size() + 1; i++) {
             fileArgs[i] = Integer.toString(fileIDs.get(i-1));
-            if(i < fileIDs.size()) {
+            if(i - 1 < fileIDs.size() - 1) {
                 fileSelection += "?, ";
             }
             else {
@@ -1080,6 +1141,11 @@ public class DatabaseUtils {
 
         /* TAGS DATABASE QUERY */////////////////////////////////////////////////////////////////
 
+        //if no tags, return empty list
+        if(Tag.size() == 0) {
+            return paths;
+        }
+
         // Gets the data repository in read mode
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
@@ -1126,6 +1192,11 @@ public class DatabaseUtils {
         c1.close();
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if no tagIDs, return empty list
+        if(tagIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -1181,6 +1252,11 @@ public class DatabaseUtils {
         fileIDs = temp;
 
         /* FILES DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if no fileIDs, return empty list
+        if(fileIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -1246,6 +1322,11 @@ public class DatabaseUtils {
 
         /* TAGS DATABASE QUERY */////////////////////////////////////////////////////////////////
 
+        //if no tag, return empty list
+        if(Tag == null) {
+            return paths;
+        }
+
         // Gets the data repository in read mode
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
@@ -1283,6 +1364,11 @@ public class DatabaseUtils {
         c1.close();
 
         /* PAIRS DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if no tagIDs, return empty list
+        if(tagIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -1338,6 +1424,11 @@ public class DatabaseUtils {
         fileIDs = temp;
 
         /* FILES DATABASE QUERY */////////////////////////////////////////////////////////////////
+
+        //if no fileIDs, return empty list
+        if(fileIDs.size() == 0) {
+            return paths;
+        }
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -1399,6 +1490,11 @@ public class DatabaseUtils {
     public static List<String> getTagsFromFilePath(Context context, String filePath) {
         List<String> tags = new ArrayList<>();
 
+        //if no file path, return empty list
+        if(filePath == null) {
+            return tags;
+        }
+
         SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
 
         String[] filesProjection = {
@@ -1430,6 +1526,11 @@ public class DatabaseUtils {
         c1.close();
 
         ///////////////////////////Pairs Query///////////////////////////////////////////////////////
+
+        //if no fileIDs, return empty list
+        if(fileIDs.size() == 0) {
+            return tags;
+        }
 
         String[] pairsProjection = {
                 PairDatabaseContract.PairDatabase.COLUMN_NAME_TAGID
@@ -1479,6 +1580,11 @@ public class DatabaseUtils {
 
         ///////////////////////////Tags Query////////////////////////////////////////////////////////////////
 
+        //if no tagIDs, return empty list
+        if(tagIDs.size() == 0) {
+            return tags;
+        }
+
         String[] tagsProjection = {
                 TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME
         };
@@ -1512,6 +1618,105 @@ public class DatabaseUtils {
             c3.moveToNext();
         }
         c3.close();
+
+        return tags;
+    }
+
+    /**
+     * Removes the given tag-image association from the Pairs table.
+     * @param context The application context needed to use the database helper
+     * @param filePath The file path to the image you are removing the tag from
+     * @param Tag The tag being removed from the given image
+     */
+    public static void removeTagFromImage(Context context, String filePath, String Tag) {
+        int fileID = getFileIDFromPath(context, filePath);
+        int tagID = getTagIDFromTag(context, Tag);
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String selection = PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + " = ? AND " + PairDatabaseContract.PairDatabase.COLUMN_NAME_TAGID + " = ?";
+
+        String[] selectionArgs = {Integer.toString(fileID), Integer.toString(tagID)};
+
+        db.delete(PairDatabaseContract.PairDatabase.TABLE_NAME, selection, selectionArgs);
+    }
+
+    /**
+     * Removes the given tag-image associations from the Pairs table.
+     * @param context The application context needed to use the database helper
+     * @param filePath The file path to the image you are removing the tag from
+     * @param Tags The tags being removed from the given image
+     */
+    public static void removeTagFromImage(Context context, String filePath, List<String> Tags) {
+        int fileID = getFileIDFromPath(context, filePath);
+        List<Integer> tagIDs = new ArrayList<>();
+
+        for (String Tag: Tags) {
+            tagIDs.add(getTagIDFromTag(context, Tag));
+        }
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String selection = PairDatabaseContract.PairDatabase.COLUMN_NAME_FILEID + " = ? AND " + PairDatabaseContract.PairDatabase.COLUMN_NAME_TAGID + " IN (";
+
+        String[] selectionArgs = new String[tagIDs.size()+1];
+        selectionArgs[0] = Integer.toString(fileID);
+        for (int i = 1; i < tagIDs.size()+1; i++) {
+            selectionArgs[i] = Integer.toString(tagIDs.get(i-1));
+            if(i-1 < tagIDs.size()-1) {
+                selection += "?, ";
+            }
+            else {
+                selection += "?)";
+            }
+        }
+
+        db.delete(PairDatabaseContract.PairDatabase.TABLE_NAME, selection, selectionArgs);
+    }
+
+    /**
+     * Retrieves all of the tags that could potentially be the partial string. This is to be used
+     * when searching to show a list of tags that already exist that the user can pick from so they
+     * don't have to type the whole thing out. This will reduce issues dealing with spelling errors
+     * and help speed up the user during searching.
+     * @param context The application context needed to use the database helper
+     * @param partialTag The partial name for a tag being searched for
+     * @return A list of tags that could potentially be the partial tag
+     */
+    public static List<String> getTagsFromPartialQuery(Context context, String partialTag) {
+        List<String> tags = new ArrayList<>();
+
+        //if partialTag is null, return empty list
+        if(partialTag == null) {
+            return tags;
+        }
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String[] projection = {
+                TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME
+        };
+
+        String selection = TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME + " LIKE ?";
+        String[] selectionArgs = { partialTag+"%" };
+
+        String order = TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME + " COLLATE NOCASE";
+
+        Cursor c = db.query(
+                TagDatabaseContract.TagDatabase.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                order
+        );
+
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            tags.add(c.getString(c.getColumnIndexOrThrow(TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME)));
+            c.moveToNext();
+        }
 
         return tags;
     }
