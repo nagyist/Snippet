@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +34,6 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     public static final String FILEPATH_EXTRA_KEY = "snippet/file_path";
     public static final String BITMAP_EXTRA_KEY = "snippet/bitmap";
-    public static final String FILEPATH_EXTRA_KEY = "snippet/filepath";
 
     @BindView(R.id.bigImageView) ImageView mImageView;
     @BindView(R.id.addManageTagsBtn) Button tagsButton;
@@ -108,15 +108,20 @@ public class ImageViewerActivity extends AppCompatActivity {
         autoTagDialog = builder.create();
 
         //Launch the dialog if the user has not previously autotagged this image
-        if(DatabaseUtils.getAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath)) {
+        try{
+            if (DatabaseUtils.getAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath)) {
+                autoTagDialog.show();
+            }
+        } catch (CursorIndexOutOfBoundsException e) {
+            //Image could not be found in the database
             autoTagDialog.show();
+            Toast.makeText(ImageViewerActivity.this, "Could not find image in DB", Toast.LENGTH_SHORT).show();
         }
     }
 
     TagListener tagListener = new TagListener() {
         @Override
         public void onReceiveTags(List<String> tags) {
-            int fileId = DatabaseUtils.getFileIDFromPath(ImageViewerActivity.this, mFilePath);
             //Update the tags in the database
             DatabaseUtils.addTagToFilePath(ImageViewerActivity.this, tags, mFilePath);
         }
