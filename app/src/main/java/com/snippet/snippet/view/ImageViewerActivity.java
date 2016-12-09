@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +28,8 @@ public class ImageViewerActivity extends AppCompatActivity {
     public static final String FILEPATH_EXTRA_KEY = "snippet/file_path";
     public static final String BITMAP_EXTRA_KEY = "snippet/bitmap";
     public static final int MAX_RESOLUTION = 4096;
+
+    private static long stopwatchStart;
 
     @BindView(R.id.bigImageView) ImageView mImageView;
     @BindView(R.id.addManageTagsBtn) Button tagsButton;
@@ -97,6 +100,7 @@ public class ImageViewerActivity extends AppCompatActivity {
                 //Set appropriate flag in database
                 DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, true);
                 //Launch ClarifAI request
+                stopwatchStart = System.currentTimeMillis();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -121,6 +125,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         @Override
         public void onReceiveTags(List<String> tags) {
             //Update the tags in the database
+            Log.d("CLARIFAI TIME TO RETURN", Long.toString(System.currentTimeMillis() - stopwatchStart));
             DatabaseUtils.addTagToFilePath(ImageViewerActivity.this, tags, mFilePath);
             DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, true);
         }

@@ -36,6 +36,7 @@ public class SnippetUtilsTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
         DatabaseUtils.removeAllTables(appContext);
+        DatabaseUtils.createDatabaseTables(appContext);
 
         for(int i = 0; i < 10; i++) {
             DatabaseUtils.addFilePathToDB(appContext, "Testing Path " + i, i%2 == 0);
@@ -140,6 +141,7 @@ public class SnippetUtilsTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
         DatabaseUtils.removeAllTables(appContext);
+        DatabaseUtils.createDatabaseTables(appContext);
 
         List<String> filePaths = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
@@ -252,6 +254,7 @@ public class SnippetUtilsTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
         DatabaseUtils.removeAllTables(appContext);
+        DatabaseUtils.createDatabaseTables(appContext);
 
         List<String> filePaths = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
