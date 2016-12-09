@@ -2,7 +2,7 @@ package com.snippet.snippet.view;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,8 +17,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.snippet.snippet.R;
-import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
+import com.snippet.snippet.controller.DatabaseUtils;
 import com.snippet.snippet.controller.ImageUtils;
+import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,17 +52,8 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         untaggedPhotosRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
-        ArrayList<Bitmap> resourceLocations = new ArrayList<>();
-        ArrayList<Integer> resourceIds = new ArrayList<>();
-        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, resourceIds, this.getApplicationContext()));
-        paths = getIntent().getStringArrayListExtra(pathsExtraKey);
-        List<Bitmap> bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(50, paths.size()));
-        // TODO again using all 0s for image ids until we actually know what to use
-        resourceIds = new ArrayList<>(bitmaps.size());
-        for (int i = 0; i < bitmaps.size(); i++) {
-            resourceIds.add(0);
-        }
-        ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(bitmaps, resourceIds);
+        List<String> resourceLocations = new ArrayList<>();
+        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
 
         // TODO camera logic copied from MainWindow_Activity which was incomplete at the time
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -72,6 +64,8 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
                 requestCameraPermissions();
             }
         });
+
+        new AsyncImageLogicPaths().execute();
     }
 
     // Copied from MainWindow_Activity
@@ -80,6 +74,35 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
             if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
             }
+        }
+    }
+
+    private void updateRecyclerView(List<String> imagesToAdd) {
+        ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).replaceDataset(imagesToAdd);
+    }
+
+    private List<String> getImagePaths() {
+        List<String> paths = DatabaseUtils.getAllFilePaths(this);
+        if(paths.size() == 0) {
+            paths = ImageUtils.getImagesPath(this);
+        }
+
+        return paths;
+    }
+
+    protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, List<String>> {
+
+        @Override
+        protected List<String> doInBackground(String... params) {
+            List<String> paths = new ArrayList<>();
+            paths = getImagePaths();
+
+            return paths;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result) {
+            updateRecyclerView(result);
         }
     }
 }

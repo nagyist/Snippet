@@ -1,12 +1,16 @@
 package com.snippet.snippet.view;
 
 import android.app.AlertDialog;
+
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -20,13 +24,14 @@ import com.snippet.snippet.controller.adapters.ClarifAIHelper;
 import com.snippet.snippet.model.DatabaseHelper;
 
 import java.util.List;
+import com.snippet.snippet.controller.ImageUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ImageViewerActivity extends AppCompatActivity {
 
-    public static final String FILEID_EXTRA_KEY = "snippet/fileid";
+    public static final String FILEPATH_EXTRA_KEY = "snippet/file_path";
     public static final String BITMAP_EXTRA_KEY = "snippet/bitmap";
     public static final String FILEPATH_EXTRA_KEY = "snippet/filepath";
 
@@ -36,7 +41,7 @@ public class ImageViewerActivity extends AppCompatActivity {
     AlertDialog autoTagDialog;
 
     private int mImageId;
-    private String imageFilepath;
+    private String mFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +56,8 @@ public class ImageViewerActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        mImageId = getIntent().getIntExtra(FILEID_EXTRA_KEY, -1);
-        Bitmap bmp = getIntent().getParcelableExtra(BITMAP_EXTRA_KEY);
-        mImageView.setImageBitmap(bmp);
+        mFilePath = getIntent().getStringExtra(FILEPATH_EXTRA_KEY);
+        ImageUtils.addImageToImageView(this, mImageView, mFilePath, null, null);
 
         //Build the dialog for prompting the user to send the image to ClarifAI
         createAutoTagDialog();
@@ -87,10 +91,10 @@ public class ImageViewerActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(ImageViewerActivity.this, "You clicked Yes", Toast.LENGTH_SHORT).show();
                 //Set appropriate flag in database
-                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, imageFilepath, true);
+                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, true);
                 //Launch ClarifAI request
                 ClarifAIHelper clarifAIHelper = new ClarifAIHelper(ImageViewerActivity.this);
-                clarifAIHelper.sendToClarifAI(imageFilepath, tagListener);
+                clarifAIHelper.sendToClarifAI(mFilePath, tagListener);
 
             }
         });
@@ -98,13 +102,13 @@ public class ImageViewerActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(ImageViewerActivity.this, "You clicked No", Toast.LENGTH_SHORT).show();
                 //Set appropriate flag in database
-                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, imageFilepath, false);
+                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, false);
             }
         });
         autoTagDialog = builder.create();
 
         //Launch the dialog if the user has not previously autotagged this image
-        if(DatabaseUtils.getAutoTaggedFromFilePath(ImageViewerActivity.this, imageFilepath)) {
+        if(DatabaseUtils.getAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath)) {
             autoTagDialog.show();
         }
     }
@@ -112,13 +116,9 @@ public class ImageViewerActivity extends AppCompatActivity {
     TagListener tagListener = new TagListener() {
         @Override
         public void onReceiveTags(List<String> tags) {
-            int fileId = DatabaseUtils.getFileIDFromPath(ImageViewerActivity.this, imageFilepath);
+            int fileId = DatabaseUtils.getFileIDFromPath(ImageViewerActivity.this, mFilePath);
             //Update the tags in the database
-            for (String tag : tags) {
-                DatabaseUtils.addTagToDB(ImageViewerActivity.this, tag);
-                int new_tagid = DatabaseUtils.getTagIDFromTag(ImageViewerActivity.this, tag);
-                DatabaseUtils.addPairToDB(ImageViewerActivity.this, fileId, new_tagid);
-            }
+            DatabaseUtils.addTagToFilePath(ImageViewerActivity.this, tags, mFilePath);
         }
     };
 

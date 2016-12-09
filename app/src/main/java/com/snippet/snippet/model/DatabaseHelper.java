@@ -12,13 +12,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String BOOLEAN_TYPE = " BOOLEAN";
+    private static final String UNIQUE = " UNIQUE";
     private static final String INT_TYPE = " INTEGER";
     private static final String NOT_NULL = " NOT NULL";
     private static final String COMMA_SEP = ", ";
     private static final String SQL_CREATE_ENTRIES_FILES =
             "CREATE TABLE IF NOT EXISTS " + FileDatabaseContract.FileDatabase.TABLE_NAME + " (" +
                     FileDatabaseContract.FileDatabase._ID + " INTEGER PRIMARY KEY" + " AUTOINCREMENT" + COMMA_SEP +
-                    FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH + TEXT_TYPE + NOT_NULL + COMMA_SEP +
+                    FileDatabaseContract.FileDatabase.COLUMN_NAME_FILEPATH + TEXT_TYPE + UNIQUE + NOT_NULL + COMMA_SEP +
                     FileDatabaseContract.FileDatabase.COLUMN_NAME_AUTOTAGGED + BOOLEAN_TYPE + NOT_NULL + " )";
 
     private static final String SQL_CREATE_ENTRIES_PAIRS =
@@ -31,7 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES_TAGS =
             "CREATE TABLE IF NOT EXISTS " + TagDatabaseContract.TagDatabase.TABLE_NAME + " (" +
                     TagDatabaseContract.TagDatabase._ID + INT_TYPE + NOT_NULL + COMMA_SEP +
-                    TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
+                    TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME + TEXT_TYPE + UNIQUE + NOT_NULL + COMMA_SEP +
                     " PRIMARY KEY (" + TagDatabaseContract.TagDatabase._ID + ")" +
                     ")";
 
@@ -39,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " + FileDatabaseContract.FileDatabase.TABLE_NAME;
 
     private static final String SQL_DELETE_ENTRIES_PAIRS =
-            "DROP TABLE IF EXISTS " + TagDatabaseContract.TagDatabase.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + PairDatabaseContract.PairDatabase.TABLE_NAME;
 
     private static final String SQL_DELETE_ENTRIES_TAGS =
             "DROP TABLE IF EXISTS " + TagDatabaseContract.TagDatabase.TABLE_NAME;

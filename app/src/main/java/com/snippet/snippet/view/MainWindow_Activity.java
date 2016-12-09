@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,8 +38,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.snippet.snippet.R;
-import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
+import com.snippet.snippet.controller.DatabaseUtils;
 import com.snippet.snippet.controller.ImageUtils;
+import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,6 +89,8 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         });
 
         paths = null;
+        //TODO remove this for final deliverable as this is only for debugging purposes
+        DatabaseUtils.removeAllTables(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -106,23 +108,13 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         taggedPhotosRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL));
 
         //Set the RecyclerView Adapters
-//        ArrayList<Bitmap> resourceLocations = new ArrayList<>();
-        ArrayList<Bitmap> resourceLocations = new ArrayList<>();
-        ArrayList<Integer> resourceIds = new ArrayList<>();
-        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, resourceIds, this.getApplicationContext()));
-        taggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, resourceIds, this.getApplicationContext()));
+
+        List<String> resourceLocations = new ArrayList<>();
+        untaggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
+        taggedPhotosRecyclerView.setAdapter(new PhotosRecyclerViewAdapter(resourceLocations, this.getApplicationContext()));
 
         progressBar.setVisibility(View.VISIBLE);
         progressBar.show();
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new AsyncImageLogic().execute(TAG_UNTAGGEDPHOTOS);
-                new AsyncImageLogic().execute(TAG_TAGGEDPHOTOS);
-            }
-        });
-        thread.run();
 
         untaggedPhotosButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +124,9 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
                 startActivity(intent);
             }
         });
+
+        new AsyncImageLogicPaths().execute(TAG_UNTAGGEDPHOTOS);
+        new AsyncImageLogicPaths().execute(TAG_TAGGEDPHOTOS);
     }
 
     public void requestCameraPermissions() {
@@ -199,43 +194,13 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         return true;
     }
 
-    /**
-     * Temporary proof of concept code to show the images in the recyclerview
-     * @param TAG The tag to indicate which photos should be placed in the view
-     * @return an arraylist of resource locations
-     */
-    public List<Bitmap> fillWithBitmaps(String TAG) {
-        List<Bitmap> bitmaps = new ArrayList<>();
-        if(paths == null) {
-            paths = ImageUtils.getImagesPath(this);
-        }
+    private void updateRecyclerView(String TAG, List<String> imagesToAdd) {
         switch(TAG) {
             case TAG_UNTAGGEDPHOTOS:
-                bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(50, paths.size()));
+                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).replaceDataset(imagesToAdd);
                 break;
             case TAG_TAGGEDPHOTOS:
-                bitmaps = ImageUtils.getImagesBitmap(paths, Math.min(150, paths.size()));
-                break;
-            case TAG_HIDDENPHOTOS:
-                break;
-        }
-
-        return bitmaps;
-    }
-
-    /* ATTEMPTING TO DO ASYNCHRONOUS IMAGE FETCHING. ISSUES WITH UPDATING UI NOT ON ORIGINAL THREAD */
-    public void updateRecyclerView(String TAG, List<Bitmap> imagesToAdd) {
-        // TODO VERY PLACEHOLDER use all 0s for ids until async image logic returns them
-        List<Integer> imageIds = new ArrayList<>(imagesToAdd.size());
-        for (int i = 0; i < imagesToAdd.size(); i++) {
-            imageIds.add(0);
-        }
-        switch(TAG) {
-            case TAG_UNTAGGEDPHOTOS:
-                ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd, imageIds);
-                break;
-            case TAG_TAGGEDPHOTOS:
-                ((PhotosRecyclerViewAdapter) taggedPhotosRecyclerView.getAdapter()).addImage(imagesToAdd, imageIds);
+                ((PhotosRecyclerViewAdapter) taggedPhotosRecyclerView.getAdapter()).replaceDataset(imagesToAdd);
                 progressBar.hide();
                 progressBar.setVisibility(View.GONE);
                 break;
@@ -244,20 +209,29 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         }
     }
 
-    protected class AsyncImageLogic extends AsyncTask<String, Integer, Pair<String, List<Bitmap>>> {
+    private List<String> getImagePaths() {
+        List<String> paths = DatabaseUtils.getAllFilePaths(this);
+        if(paths.size() == 0) {
+            paths = ImageUtils.getImagesPath(this);
+        }
+
+        return paths;
+    }
+
+    protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, Pair<String, List<String>>> {
 
         @Override
-        protected Pair<String, List<Bitmap>> doInBackground(String... params) {
-            List<Bitmap> bitmaps = new ArrayList<>();
+        protected Pair<String, List<String>> doInBackground(String... params) {
+            List<String> paths = new ArrayList<>();
             for (int i = 0; i < params.length; i++) {
-                bitmaps = fillWithBitmaps(params[i]);
+                paths = getImagePaths();
             }
 
-            return new Pair<>(params[0], bitmaps);
+            return new Pair<>(params[0], paths);
         }
 
         @Override
-        protected void onPostExecute(Pair<String, List<Bitmap>> result) {
+        protected void onPostExecute(Pair<String, List<String>> result) {
             updateRecyclerView(result.first, result.second);
         }
     }

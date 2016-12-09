@@ -2,6 +2,7 @@ package com.snippet.snippet.controller;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -9,7 +10,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.widget.ImageView;
 
+import com.snippet.snippet.R;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +48,9 @@ public class ImageUtils {
             while (cursor.moveToNext()) {
                 PathOfImage = cursor.getString(column_index_data); //get the path from the database entry
 
-                listOfAllImages.add(PathOfImage); //add the path to the list
+                if(!PathOfImage.contains("Android/data")) { //to avoid images from other apps
+                    listOfAllImages.add(PathOfImage); //add the path to the list
+                }
             }
         }
 
@@ -58,6 +66,23 @@ public class ImageUtils {
             bitmaps.add(BitmapFactory.decodeFile(imagePaths.get(i), options));
         }
         return bitmaps;
+    }
+
+    /**
+     * Adds a file to the given ImageView using the Picasso Library to handle efficient memory usage.
+     * @param context The context of the Application
+     * @param imageView The ImageView being used
+     * @param filePath The File path to the file locally on disk
+     * @param resizeWidth The new width you want the image to be to reduce memory costs (NULL IF THERE IS NO CHANGE TO THE IMAGE)
+     * @param resizeHeight The new height you want the image to be to reduce momory costs (NULL IF THERE IS NO CHANGE TO THE IMAGE)
+     */
+    public static void addImageToImageView(Context context, ImageView imageView, String filePath, Integer resizeWidth, Integer resizeHeight) {
+        if(resizeHeight == null || resizeWidth == null) {
+            Picasso.with(context).load(new File(filePath)).placeholder(R.drawable.placeholder).into(imageView);
+        }
+        else {
+            Picasso.with(context).load(new File(filePath)).resize(resizeWidth, resizeHeight).centerCrop().placeholder(R.drawable.placeholder).into(imageView);
+        }
     }
 
 }
