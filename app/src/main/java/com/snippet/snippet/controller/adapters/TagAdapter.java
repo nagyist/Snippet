@@ -43,6 +43,11 @@ public class TagAdapter extends BaseAdapter {
         return 0;
     }
 
+    public void addTag(String tag) {
+        tags.add(tag);
+        notifyDataSetChanged();
+    }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView textView;
         LinearLayout linearLayout;
