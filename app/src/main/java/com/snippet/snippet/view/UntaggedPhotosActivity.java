@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.DatabaseUtils;
-import com.snippet.snippet.controller.ImageUtils;
 import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -81,21 +80,11 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
         ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).replaceDataset(imagesToAdd);
     }
 
-    private List<String> getImagePaths() {
-        List<String> paths = DatabaseUtils.getAllFilePaths(this);
-        if(paths.size() == 0) {
-            paths = ImageUtils.getImagesPath(this);
-        }
-
-        return paths;
-    }
-
     protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, List<String>> {
 
         @Override
         protected List<String> doInBackground(String... params) {
-            List<String> paths = new ArrayList<>();
-            paths = getImagePaths();
+            List<String> paths = DatabaseUtils.getUntaggedImagesFromDB(UntaggedPhotosActivity.this);
 
             return paths;
         }
