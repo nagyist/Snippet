@@ -43,6 +43,7 @@ public class ImageViewerActivity extends AppCompatActivity {
     @BindView(R.id.tagGrid) GridView gridView;
     @BindView(R.id.layoutTags) LinearLayout layoutTagsView;
     @BindView(R.id.buttonCloseTags) Button closeTagsButton;
+    @BindView(R.id.buttonAddTag) Button addTagsButton;
 
     AlertDialog autoTagDialog;
 
@@ -95,10 +96,19 @@ public class ImageViewerActivity extends AppCompatActivity {
             }
         });
 
+        //Allow the close button to close the tag viewer window
         closeTagsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 layoutTagsView.setVisibility(View.GONE);
+            }
+        });
+
+        //Allow the add button to launch a fragment to manually add tags
+        addTagsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AddManualTagFragment().show(ImageViewerActivity.this.getFragmentManager(), "AddManualTag");
             }
         });
     }
