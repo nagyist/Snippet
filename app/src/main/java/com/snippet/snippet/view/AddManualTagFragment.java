@@ -17,7 +17,6 @@ import com.snippet.snippet.R;
  * @date Dec. 2016
  */
 
-@TargetApi(21)
 public class AddManualTagFragment extends DialogFragment {
     Button addNewTagButton;
     Button addAllTagsButton;
