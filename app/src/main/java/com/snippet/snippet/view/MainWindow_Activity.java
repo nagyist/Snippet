@@ -44,13 +44,13 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     private static final String TAG_HIDDENPHOTOS = "HIDDEN";
     public static final int PERMISSION_CAMERA = 1002;
 
-    private List<String> paths;
-
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
     @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
     @BindView(R.id.progressBar) ContentLoadingProgressBar progressBar;
     @BindView(R.id.untaggedPhotosButton) Button untaggedPhotosButton;
+
+    private String tagToSearch = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,6 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
             }
         });
 
-        paths = null;
         //TODO remove this for final deliverable as this is only for debugging purposes
         DatabaseUtils.removeAllTables(this);
 
@@ -103,13 +102,14 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainWindow_Activity.this.getBaseContext(), UntaggedPhotosActivity.class);
-                intent.putExtra(UntaggedPhotosActivity.pathsExtraKey, (ArrayList<String>) paths);
+                // Pass the data from the untagged photos recycler view as that's the untagged photos
+                ArrayList<String> paths = new ArrayList<>(((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).getDataset());
+                intent.putExtra(UntaggedPhotosActivity.pathsExtraKey, paths);
                 startActivity(intent);
             }
         });
 
-        new AsyncImageLogicPaths().execute(TAG_UNTAGGEDPHOTOS);
-        new AsyncImageLogicPaths().execute(TAG_TAGGEDPHOTOS);
+        new AsyncImageLogicPaths().execute();
     }
 
     public void requestCameraPermissions() {
@@ -196,26 +196,55 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         List<String> paths = DatabaseUtils.getAllFilePaths(this);
         if(paths.size() == 0) {
             paths = ImageUtils.getImagesPath(this);
+            DatabaseUtils.addFilePathsToDB(this, paths);
         }
 
         return paths;
     }
 
-    protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, Pair<String, List<String>>> {
+    protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, Pair<List<String>, List<String>>> {
 
         @Override
-        protected Pair<String, List<String>> doInBackground(String... params) {
+        protected Pair<List<String>, List<String>> doInBackground(String... params) {
             List<String> paths = new ArrayList<>();
-            for (int i = 0; i < params.length; i++) {
-                paths = getImagePaths();
-            }
-
-            return new Pair<>(params[0], paths);
+//            for (int i = 0; i < params.length; i++) {
+//                paths = getImagePaths();
+//            }
+            /*switch(params[0]) {
+                case TAG_UNTAGGEDPHOTOS:
+                    paths = DatabaseUtils.getUntaggedImagesFromDB(MainWindow_Activity.this);
+                    break;
+                case TAG_TAGGEDPHOTOS:
+                    paths = getImagePaths(); //DatabaseUtils.getTaggedImagesFromDB(MainWindow_Activity.this);
+                    break;
+                case TAG_HIDDENPHOTOS:
+                    // TODO not implemented yet
+                    //paths = DatabaseUtils.getHiddenImagesFromDB(MainWindow_Activity.this);
+            }*/
+            paths = getImagePaths();
+            // TODO hack hard coding the various recycler view tags into the async call.
+            // So change it when the hidden one exists (if ever)
+            List<String> viewTags = new ArrayList<>();
+            viewTags.add(TAG_UNTAGGEDPHOTOS);
+            viewTags.add(TAG_TAGGEDPHOTOS);
+            return new Pair<>(viewTags, paths);
         }
 
         @Override
-        protected void onPostExecute(Pair<String, List<String>> result) {
-            updateRecyclerView(result.first, result.second);
+        protected void onPostExecute(Pair<List<String>, List<String>> result) {
+            for (String tag : result.first) {
+                List<String> paths = result.second; // default value
+                // TODO recycler view tags hardcoded in here as well
+                switch(tag) {
+                    case TAG_UNTAGGEDPHOTOS:
+                        paths = DatabaseUtils.getUntaggedImagesFromDB(MainWindow_Activity.this);
+                        break;
+                    case TAG_TAGGEDPHOTOS:
+                        paths = DatabaseUtils.getTaggedImagesFromDB(MainWindow_Activity.this);
+                        break;
+                }
+                updateRecyclerView(tag, paths);
+            }
         }
     }
 

@@ -82,4 +82,8 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
         mDataset = dataset;
         notifyDataSetChanged();
     }
+
+    public List<String> getDataset() {
+        return mDataset;
+    }
 }
