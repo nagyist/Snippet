@@ -98,7 +98,6 @@ public class ImageViewerActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(ImageViewerActivity.this, "You clicked Yes", Toast.LENGTH_SHORT).show();
                 //Set appropriate flag in database
-                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, true);
                 //Launch ClarifAI request
                 stopwatchStart = System.currentTimeMillis();
                 new Thread(new Runnable() {

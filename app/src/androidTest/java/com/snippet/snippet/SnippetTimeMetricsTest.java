@@ -28,6 +28,12 @@ public class SnippetTimeMetricsTest {
     
     @Test
     public void testDatabaseMetrics() throws Exception {
+        for(int i = 0; i < 10; i++) {
+            runMetrics();
+        }
+    }
+
+    public void runMetrics() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
         DatabaseUtils.removeAllTables(appContext);
@@ -97,5 +103,7 @@ public class SnippetTimeMetricsTest {
         assertTrue(queriedResults.size() == 50);
 
         DatabaseUtils.removeAllTables(appContext);
+
+        Log.d(" ", " ");
     }
 }

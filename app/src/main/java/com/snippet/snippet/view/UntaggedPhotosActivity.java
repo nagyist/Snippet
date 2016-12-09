@@ -2,11 +2,13 @@ package com.snippet.snippet.view;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -59,7 +61,7 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
             }
         });
 
-        updateRecyclerView(DatabaseUtils.getImagePathsWithoutTags(this));
+        new AsyncImageLogicPaths().execute();
     }
 
     // Copied from MainWindow_Activity
@@ -73,5 +75,26 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
 
     private void updateRecyclerView(List<String> imagesToAdd) {
         ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).replaceDataset(imagesToAdd);
+    }
+
+    protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, List<String>> {
+
+        @Override
+        protected List<String> doInBackground(String... params) {
+            List<String> paths = DatabaseUtils.getUntaggedImagePathsWithoutTags(UntaggedPhotosActivity.this);
+
+            return paths;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result) {
+            updateRecyclerView(result);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        new AsyncImageLogicPaths().execute();
+        super.onStart();
     }
 }

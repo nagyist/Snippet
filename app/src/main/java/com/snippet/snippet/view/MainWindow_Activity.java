@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.DatabaseUtils;
@@ -54,10 +55,6 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     public static final int PERMISSION_CAMERA = 1002;
     private String currentPhotoPath = "";
 
-    private List<String> paths;
-
-    private Context context;
-
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
     @BindView(R.id.untaggedPhotosLayout) LinearLayout untaggedPhotosLayout;
@@ -74,7 +71,6 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this;
 
         setContentView(R.layout.activity_main_window_);
         /*USE THE BINDVIEW ANNOTATION INSTEAD OF FIND VIEW BY ID. THIS WILL MAKE OUR CODE CLEANER
@@ -91,6 +87,9 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
                 dispatchTakePictureIntent();
             }
         });
+
+        //THIS MUST BE CALLED
+        DatabaseUtils.createDatabaseTables(this);
 
         //TODO remove this for final deliverable as this is only for debugging purposes
 //        DatabaseUtils.removeAllTables(this);
@@ -192,16 +191,13 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        }
+        else if (id == R.id.nav_untagged_photos) {
+            Intent intent = new Intent(this, UntaggedPhotosActivity.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.nav_about) {
+            Toast.makeText(this, "Nothing here yet, Boss!", Toast.LENGTH_SHORT).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -251,25 +247,27 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         return paths;
     }
 
-    protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, Pair<List<String>, List<String>>> {
+    protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, List<Pair<String, List<String>>>> {
 
         @Override
-        protected Pair<List<String>, List<String>> doInBackground(String... params) {
-            List<String> paths = getImagePaths();
+        protected List<Pair<String, List<String>>> doInBackground(String... params) {
+            getImagePaths();
             // TODO hack hard coding the various recycler view tags into the async call.
             // So change it when the hidden one exists (if ever)
-            List<String> viewTags = new ArrayList<>();
-            viewTags.add(TAG_UNTAGGEDPHOTOS);
-            viewTags.add(TAG_TAGGEDPHOTOS);
-            return new Pair<>(viewTags, paths);
+            Pair<String, List<String>> untagged = new Pair<>(TAG_UNTAGGEDPHOTOS, DatabaseUtils.getImagePathsWithoutTags(MainWindow_Activity.this));
+            Pair<String, List<String>> tagged = new Pair<>(TAG_TAGGEDPHOTOS, DatabaseUtils.getImagePathsWithTags(MainWindow_Activity.this));
+            List<Pair<String, List<String>>> results = new ArrayList<>();
+            results.add(untagged);
+            results.add(tagged);
+            return results;
         }
 
         @Override
-        protected void onPostExecute(Pair<List<String>, List<String>> result) {
-            for (String tag : result.first) {
-                List<String> paths = result.second; // default value
+        protected void onPostExecute(List<Pair<String, List<String>>> result) {
+            for (Pair<String, List<String>> pair : result) {
+                List<String> paths = pair.second; // default value
                 // TODO recycler view tags hardcoded in here as well
-                switch(tag) {
+                switch(pair.first) {
                     case TAG_UNTAGGEDPHOTOS:
                         paths = DatabaseUtils.getImagePathsWithoutTags(MainWindow_Activity.this);
                         break;
@@ -277,7 +275,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
                         paths = DatabaseUtils.getImagePathsWithTags(MainWindow_Activity.this);
                         break;
                 }
-                updateRecyclerView(tag, paths);
+                updateRecyclerView(pair.first, paths);
             }
         }
     }
@@ -328,5 +326,11 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
             currentPhotoPath = "";
             updateRecyclerView(TAG_UNTAGGEDPHOTOS, result);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        new AsyncImageLogicPaths().execute();
+        super.onStart();
     }
 }
