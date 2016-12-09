@@ -13,6 +13,7 @@ import java.util.List;
 
 import clarifai2.api.ClarifaiClient;
 import clarifai2.api.request.ClarifaiRequest;
+import clarifai2.api.request.model.PredictRequest;
 import clarifai2.dto.input.ClarifaiInput;
 import clarifai2.dto.input.image.ClarifaiImage;
 import clarifai2.dto.model.output.ClarifaiOutput;
@@ -34,11 +35,13 @@ public class ClarifAIHelper {
 
     public void sendToClarifAI(String path, final TagListener tagReceiver) {
         //Generate and send the Asynchronous request to predict labels for the image
-        Log.i("SendToClarifai", path);
+        Log.i("ClarifAI Helper", path);
         File imageToSend = new File(path);
-        client.getDefaultModels().generalModel().predict()
-                .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageToSend)))
-                .executeAsync(new ClarifaiRequest.Callback<List<ClarifaiOutput<Concept>>>() {
+        Log.i("ClarifAI Helper", "Loaded Path");
+        PredictRequest<Concept> temp = client.getDefaultModels().generalModel().predict()
+                .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageToSend)));
+        Log.i("ClarifAI Helper", "Loded Image");
+                temp.executeAsync(new ClarifaiRequest.Callback<List<ClarifaiOutput<Concept>>>() {
                     @Override
                     public void onClarifaiResponseSuccess(List<ClarifaiOutput<Concept>> clarifaiOutputs) {
                         Log.i("ClarifAI", "Response Successful");
@@ -49,6 +52,7 @@ public class ClarifAIHelper {
                                 tags.add(prediction.name());
                             }
                         }
+                        Log.i("ClarifAI Helper", "Execute Tag Receiver");
                         tagReceiver.onReceiveTags(tags);
                     }
 
@@ -62,5 +66,6 @@ public class ClarifAIHelper {
                         Log.e("ClarifAI", e.getMessage());
                     }
                 });
+        Log.i("ClarifAI Helper", "Finished request");
     }
 }

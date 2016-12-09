@@ -62,6 +62,17 @@ public class ImageViewerActivity extends AppCompatActivity {
         //Build the dialog for prompting the user to send the image to ClarifAI
         createAutoTagDialog();
 
+        //Launch the dialog if the user has not previously autotagged this image
+        try{
+            if (!DatabaseUtils.getAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath)) {
+                autoTagDialog.show();
+            }
+        } catch (CursorIndexOutOfBoundsException e) {
+            //Image could not be found in the database
+            autoTagDialog.show();
+            Toast.makeText(ImageViewerActivity.this, "Could not find image in DB", Toast.LENGTH_SHORT).show();
+        }
+
         // TODO placeholder
         tagsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,8 +104,13 @@ public class ImageViewerActivity extends AppCompatActivity {
                 //Set appropriate flag in database
                 DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, true);
                 //Launch ClarifAI request
-                ClarifAIHelper clarifAIHelper = new ClarifAIHelper(ImageViewerActivity.this);
-                clarifAIHelper.sendToClarifAI(mFilePath, tagListener);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ClarifAIHelper clarifAIHelper = new ClarifAIHelper(ImageViewerActivity.this);
+                        clarifAIHelper.sendToClarifAI(mFilePath, tagListener);
+                    }
+                }).start();
 
             }
         });
@@ -106,17 +122,6 @@ public class ImageViewerActivity extends AppCompatActivity {
             }
         });
         autoTagDialog = builder.create();
-
-        //Launch the dialog if the user has not previously autotagged this image
-        try{
-            if (DatabaseUtils.getAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath)) {
-                autoTagDialog.show();
-            }
-        } catch (CursorIndexOutOfBoundsException e) {
-            //Image could not be found in the database
-            autoTagDialog.show();
-            Toast.makeText(ImageViewerActivity.this, "Could not find image in DB", Toast.LENGTH_SHORT).show();
-        }
     }
 
     TagListener tagListener = new TagListener() {
