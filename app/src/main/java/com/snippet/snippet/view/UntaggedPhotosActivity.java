@@ -31,10 +31,6 @@ import static com.snippet.snippet.view.MainWindow_Activity.PERMISSION_CAMERA;
 
 public class UntaggedPhotosActivity extends AppCompatActivity {
 
-    public static final String pathsExtraKey = "snippet/paths";
-
-    private ArrayList<String> paths;
-
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
 
     @Override
@@ -65,7 +61,7 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
             }
         });
 
-        new AsyncImageLogicPaths().execute();
+        updateRecyclerView(DatabaseUtils.getImagePathsWithoutTags(this));
     }
 
     // Copied from MainWindow_Activity
@@ -79,30 +75,5 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
 
     private void updateRecyclerView(List<String> imagesToAdd) {
         ((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).replaceDataset(imagesToAdd);
-    }
-
-    private List<String> getImagePaths() {
-        List<String> paths = DatabaseUtils.getAllFilePaths(this);
-        if(paths.size() == 0) {
-            paths = ImageUtils.getImagesPath(this);
-        }
-
-        return paths;
-    }
-
-    protected class AsyncImageLogicPaths extends AsyncTask<String, Integer, List<String>> {
-
-        @Override
-        protected List<String> doInBackground(String... params) {
-            List<String> paths = new ArrayList<>();
-            paths = getImagePaths();
-
-            return paths;
-        }
-
-        @Override
-        protected void onPostExecute(List<String> result) {
-            updateRecyclerView(result);
-        }
     }
 }

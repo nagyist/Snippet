@@ -23,6 +23,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -122,9 +123,6 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainWindow_Activity.this.getBaseContext(), UntaggedPhotosActivity.class);
-                // Pass the data from the untagged photos recycler view as that's the untagged photos
-                ArrayList<String> paths = new ArrayList<>(((PhotosRecyclerViewAdapter) untaggedPhotosRecyclerView.getAdapter()).getDataset());
-                intent.putExtra(UntaggedPhotosActivity.pathsExtraKey, paths);
                 startActivity(intent);
             }
         });
