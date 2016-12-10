@@ -44,9 +44,28 @@ public class TagAdapter extends BaseAdapter {
         return 0;
     }
 
-    public void addTag(String tag) {
-        tags.add(tag);
-        notifyDataSetChanged();
+    public void addTag(final String tag) {
+        //Ensure that adding tags is run on the UI thread
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Add tag, and update the UI
+                tags.add(tag);
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void addTags(final List<String> new_tags) {
+        //Ensure that adding tags is run on the UI thread
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Add tags, and update UI
+                tags.addAll(new_tags);
+                TagAdapter.this.notifyDataSetChanged();
+            }
+        });
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {

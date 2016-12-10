@@ -49,6 +49,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     private int mImageId;
     private String mFilePath;
+    private TagAdapter tagAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,13 @@ public class ImageViewerActivity extends AppCompatActivity {
         mFilePath = getIntent().getStringExtra(FILEPATH_EXTRA_KEY);
         ImageUtils.addImageToImageView(this, mImageView, mFilePath, null, null);
 
+        //Add all current tags to the GridView
+        List<String> tags = DatabaseUtils.getTagsFromFilePath(ImageViewerActivity.this, mFilePath);
+        tagAdapter = new TagAdapter(ImageViewerActivity.this, tags);
+
+        //Add the adapter to the GridView
+        gridView.setAdapter(tagAdapter);
+
         //Build the dialog for prompting the user to send the image to ClarifAI
         createAutoTagDialog();
 
@@ -80,19 +88,11 @@ public class ImageViewerActivity extends AppCompatActivity {
             Toast.makeText(ImageViewerActivity.this, "Could not find image in DB", Toast.LENGTH_SHORT).show();
         }
 
-        // TODO placeholder
+        // Set the Add/Manage tags button to open the tag viewer window
         tagsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ImageViewerActivity.this, "Tags Button", Toast.LENGTH_SHORT).show();
-                List<String> tags = DatabaseUtils.getTagsFromFilePath(ImageViewerActivity.this, mFilePath);
-
-                gridView.setAdapter(new TagAdapter(ImageViewerActivity.this, tags));
                 layoutTagsView.setVisibility(View.VISIBLE);
-                //gridView.setVisibility(View.VISIBLE);
-                for(String tag: tags) {
-                    Log.d("Tags Available", mFilePath+": "+tag);
-                }
             }
         });
 
@@ -158,6 +158,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         public void onReceiveTags(List<String> tags) {
             //Update the tags in the database
             DatabaseUtils.addTagToFilePath(ImageViewerActivity.this, tags, mFilePath);
+            tagAdapter.addTags(tags);
         }
     };
 
