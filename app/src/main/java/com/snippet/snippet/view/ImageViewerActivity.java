@@ -69,7 +69,8 @@ public class ImageViewerActivity extends AppCompatActivity {
 
         //Add all current tags to the GridView
         List<String> tags = DatabaseUtils.getTagsFromFilePath(ImageViewerActivity.this, mFilePath);
-        tagAdapter = new TagAdapter(ImageViewerActivity.this, tags);
+        tagAdapter = new TagAdapter(ImageViewerActivity.this, tags, mFilePath);
+        tagAdapter.shouldAlsoRemoveFromDB(true);
 
         //Add the adapter to the GridView
         gridView.setAdapter(tagAdapter);

@@ -57,7 +57,7 @@ public class AddManualTagFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstance) {
         //Create a new tag adapter for the grid view to add and remove tags
-        final TagAdapter local_tagAdapter = new TagAdapter(getActivity(), new ArrayList<String>());
+        final TagAdapter local_tagAdapter = new TagAdapter(getActivity(), new ArrayList<String>(), filepath);
 
         //Use the builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

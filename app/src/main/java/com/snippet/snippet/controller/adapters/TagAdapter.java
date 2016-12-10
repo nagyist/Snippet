@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.snippet.snippet.R;
+import com.snippet.snippet.controller.DatabaseUtils;
 
 import org.w3c.dom.Text;
 
@@ -27,15 +28,18 @@ import java.util.List;
 public class TagAdapter extends BaseAdapter {
     private Context context;
     private List<String> tags;
+    private Boolean removeFromDB = false;
+    private String filepath;
 
     /**
      * Constructor
      * @param context  Context of the parent activity
      * @param tags  List of initial tags to display
      */
-    public TagAdapter(Context context, List<String> tags) {
+    public TagAdapter(Context context, List<String> tags, String filepath) {
         this.context = context;
         this.tags = tags;
+        this.filepath = filepath;
     }
 
     /**
@@ -107,6 +111,10 @@ public class TagAdapter extends BaseAdapter {
         return new ArrayList<String>(tags);
     }
 
+    public void shouldAlsoRemoveFromDB(Boolean value) {
+        this.removeFromDB = value;
+    }
+
     /**
      * Built-in method to create a new view to be added to the grid
      * @param position
@@ -114,7 +122,7 @@ public class TagAdapter extends BaseAdapter {
      * @param parent
      * @return
      */
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         TextView textView;
         LinearLayout linearLayout;
         Button removeButton;
@@ -128,12 +136,17 @@ public class TagAdapter extends BaseAdapter {
         textView = (TextView) convertView.findViewById(R.id.tagViewText);
         removeButton = (Button) convertView.findViewById(R.id.tagViewCancel);
 
-        //Set the text, and button action
+        //Set the text, and remove button action
         textView.setText(tags.get(position));
         removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("TagButton", "You clicked to remove a tag!");
+                final String tagname = tags.get(position);
+                tags.remove(position);
+                notifyDataSetChanged();
+                if(TagAdapter.this.removeFromDB) {
+                    DatabaseUtils.removeTagFromImage(context, filepath, tagname);
+                }
             }
         });
         return convertView;
