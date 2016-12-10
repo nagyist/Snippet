@@ -86,8 +86,9 @@ public class AddManualTagFragment extends DialogFragment {
         addNewTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Pressed Add Tag", Toast.LENGTH_SHORT).show();
                 local_tagAdapter.addTag(tagText.getText().toString());
+                //Clear the entered tag from the text box
+                tagText.setText("");
             }
         });
 
