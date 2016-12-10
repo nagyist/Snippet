@@ -18,6 +18,8 @@ import org.w3c.dom.Text;
 import java.util.List;
 
 /**
+ * Defines an Adapter that can display tags in a GridView.  Provides methods
+ * for adding and removing tags from the display as well.
  * @author Jordan Burklund
  */
 
@@ -25,25 +27,48 @@ public class TagAdapter extends BaseAdapter {
     private Context context;
     private List<String> tags;
 
+    /**
+     * Constructor
+     * @param context  Context of the parent activity
+     * @param tags  List of initial tags to display
+     */
     public TagAdapter(Context context, List<String> tags) {
         this.context = context;
         this.tags = tags;
     }
 
+    /**
+     * Get the number of tags that the GridView should display
+     * @return number of tags in the list
+     */
     public int getCount() {
         return tags.size();
     }
 
+    /**
+     * Required method to get the Object in the list at a certain position.  Not ever used...
+     * @param position
+     * @return
+     */
     public Object getItem(int position) {
         //TODO
         return null;
     }
 
+    /**
+     * Required method to get the ID of an item.  Not ever used...
+     * @param position
+     * @return
+     */
     public long getItemId(int position) {
         //TODO
         return 0;
     }
 
+    /**
+     * Add a tag to the view
+     * @param tag  Tag name to add
+     */
     public void addTag(final String tag) {
         //Ensure that adding tags is run on the UI thread
         ((Activity) context).runOnUiThread(new Runnable() {
@@ -56,6 +81,10 @@ public class TagAdapter extends BaseAdapter {
         });
     }
 
+    /**
+     * Add a list of tags to the view
+     * @param new_tags List of tag names to add
+     */
     public void addTags(final List<String> new_tags) {
         //Ensure that adding tags is run on the UI thread
         ((Activity) context).runOnUiThread(new Runnable() {
@@ -68,6 +97,13 @@ public class TagAdapter extends BaseAdapter {
         });
     }
 
+    /**
+     * Built-in method to create a new view to be added to the grid
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView textView;
         LinearLayout linearLayout;
