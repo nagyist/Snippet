@@ -5,7 +5,7 @@
     <color name="colorAccent">#582DA9</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="blackTransparent">#55000000</color>
+    <color name="blackTransparent">#99000000</color>
     <color name="lightGrey">#EEEEEE</color>
     <color name="buttonClose">#e04c4a</color>
 </resources>
