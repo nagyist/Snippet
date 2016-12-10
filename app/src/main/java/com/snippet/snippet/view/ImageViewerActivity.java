@@ -108,7 +108,9 @@ public class ImageViewerActivity extends AppCompatActivity {
         addTagsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AddManualTagFragment().show(ImageViewerActivity.this.getFragmentManager(), "AddManualTag");
+                new AddManualTagFragment()
+                        .newInstance(mFilePath, tagAdapter)
+                        .show(ImageViewerActivity.this.getFragmentManager(), "AddManualTag");
             }
         });
     }

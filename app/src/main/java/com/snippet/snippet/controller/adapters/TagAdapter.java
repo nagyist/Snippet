@@ -15,6 +15,7 @@ import com.snippet.snippet.R;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -95,6 +96,15 @@ public class TagAdapter extends BaseAdapter {
                 TagAdapter.this.notifyDataSetChanged();
             }
         });
+    }
+
+    /**
+     * Get a list of tags for this image
+     * @return List of tags the user wants to add
+     */
+    public List<String> getTags() {
+        // Shallow copy all of the tags
+        return new ArrayList<String>(tags);
     }
 
     /**
