@@ -1,5 +1,6 @@
 package com.snippet.snippet.controller.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -52,24 +53,17 @@ public class TagAdapter extends BaseAdapter {
         TextView textView;
         LinearLayout linearLayout;
         Button removeButton;
+
+        //If the view hasn't been initialized, create a tag view
         if (convertView == null) {
-            //if it's not recycled, initialize attributes
-            linearLayout = new LinearLayout(context);
-            textView = new TextView(context);
-            removeButton = new Button(context);
-            removeButton.setText("X");
-            textView.setTextColor(context.getResources().getColor(R.color.colorWhite));
-            linearLayout.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
-            linearLayout.addView(textView);
-            linearLayout.addView(removeButton);
-            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-            linearLayout.setPadding(8,8,8,8);
-        } else {
-            linearLayout = (LinearLayout) convertView;
-            textView = (TextView) linearLayout.getChildAt(0);
-            removeButton = (Button) linearLayout.getChildAt(1);
+            convertView = ((Activity) context).getLayoutInflater().inflate(R.layout.tag_view, null);
         }
 
+        //Get references to the views
+        textView = (TextView) convertView.findViewById(R.id.tagViewText);
+        removeButton = (Button) convertView.findViewById(R.id.tagViewCancel);
+
+        //Set the text, and button action
         textView.setText(tags.get(position));
         removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +71,6 @@ public class TagAdapter extends BaseAdapter {
                 Log.i("TagButton", "You clicked to remove a tag!");
             }
         });
-        return linearLayout;
+        return convertView;
     }
 }
