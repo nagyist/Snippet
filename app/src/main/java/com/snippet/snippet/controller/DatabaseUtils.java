@@ -654,6 +654,41 @@ public class DatabaseUtils {
     }
 
     /**
+     * Retrieves every tag that is stored in the Tags table of the Database
+     * @param context The application context needed to use the database helper
+     * @return A list of every Tag in the database
+     */
+    public static List<String> getAllTags(Context context) {
+        List<String> tags = new ArrayList<>();
+
+        SQLiteDatabase db = getDatabaseHelper(context).getReadableDatabase();
+
+        String[] projection = {
+                TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME
+        };
+
+        String sortOrder = TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME + " ASC";
+
+        Cursor c = db.query(
+                TagDatabaseContract.TagDatabase.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                sortOrder
+        );
+
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            tags.add(c.getString(c.getColumnIndexOrThrow(TagDatabaseContract.TagDatabase.COLUMN_NAME_TAGNAME)));
+            c.moveToNext();
+        }
+
+        return tags;
+    }
+
+    /**
      * Retrieves whether or not the image with the given file path has been tagged by Clarifai yet.
      * @param context The application context needed to use the database helper
      * @param filePath The image you would like to see whether or not it has been tagged by Clarifai

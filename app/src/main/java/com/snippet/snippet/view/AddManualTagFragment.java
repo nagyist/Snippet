@@ -9,6 +9,8 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -78,8 +80,13 @@ public class AddManualTagFragment extends DialogFragment {
             }
         });
 
-        //Get a reference to the auto complete text view
+        //Get a list of all possible tags
+        List<String> allTags = DatabaseUtils.getAllTags(AddManualTagFragment.this.getActivity());
+
+        //Get a reference to the auto complete text view, and set the autocomplete options
         tagText = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
+        ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_expandable_list_item_1, allTags);
+        tagText.setAdapter(autoCompleteAdapter);
 
         //Add a listener to the Add button to add the tag to the temp list
         addNewTagButton = (Button) view.findViewById(R.id.addNewTagButton);
@@ -97,6 +104,9 @@ public class AddManualTagFragment extends DialogFragment {
         tagsGridView.setAdapter(local_tagAdapter);
 
         //Build the AlertDialog and return it;
-        return builder.create();
+        Dialog dl = builder.create();
+        //Set this option so that the fragment does not disappear behind the keyboard
+        dl.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        return dl;
     }
 }
