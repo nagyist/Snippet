@@ -23,7 +23,7 @@
         android:paddingLeft = "8dp"
         android:background="@color/colorGray">
 
-        <EditText
+        <AutoCompleteTextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:ems="10"

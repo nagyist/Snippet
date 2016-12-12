@@ -28,6 +28,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -64,7 +66,7 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     @BindView(R.id.taggedPhotosRecyclerView) RecyclerView taggedPhotosRecyclerView;
     @BindView(R.id.progressBar) ContentLoadingProgressBar progressBar;
     @BindView(R.id.untaggedPhotosButton) Button untaggedPhotosButton;
-    @BindView(R.id.mainSearchBar) EditText searchBar;
+    @BindView(R.id.mainSearchBar) AutoCompleteTextView searchBar;
     @BindView(R.id.mainSearchButton) Button searchButton;
 
     private String tagToSearch = "";
@@ -137,6 +139,13 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
                 MainWindow_Activity.this.doSearch(searchBar.getText().toString());
             }
         });
+
+        //Get a list of all possible tags
+        List<String> allTags = DatabaseUtils.getAllTags(this);
+
+        //Set the values for the AutoComplete search bar
+        ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, allTags);
+        searchBar.setAdapter(autoCompleteAdapter);
 
         new AsyncImageLogicPaths().execute();
     }
