@@ -1,26 +1,30 @@
 package com.snippet.snippet.view;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Toast;
 
 import com.snippet.snippet.R;
 import com.snippet.snippet.controller.DatabaseUtils;
+import com.snippet.snippet.controller.ImageUtils;
 import com.snippet.snippet.controller.adapters.PhotosRecyclerViewAdapter;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +36,8 @@ import static com.snippet.snippet.view.MainWindow_Activity.PERMISSION_CAMERA;
 public class UntaggedPhotosActivity extends AppCompatActivity {
 
     @BindView(R.id.untaggedPhotosRecyclerView) RecyclerView untaggedPhotosRecyclerView;
+
+    private String currentPhotoPath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +62,12 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(UntaggedPhotosActivity.this, "Camera Button", Toast.LENGTH_SHORT).show();
-                requestCameraPermissions();
+                if(ContextCompat.checkSelfPermission(UntaggedPhotosActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    requestCameraPermissions();
+                }
+                else {
+                    dispatchTakePictureIntent();
+                }
             }
         });
 
@@ -96,5 +106,57 @@ public class UntaggedPhotosActivity extends AppCompatActivity {
     protected void onStart() {
         new AsyncImageLogicPaths().execute();
         super.onStart();
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = ImageUtils.createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = Uri.fromFile(photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, ImageUtils.REQUEST_IMAGE_CAPTURE);
+                currentPhotoPath = photoFile.getAbsolutePath();
+            }
+        }
+    }
+
+    protected class TakePictureUpdateViews extends AsyncTask<String, Integer, List<String>> {
+
+        @Override
+        protected List<String> doInBackground(String... params) {
+            List<String> paths = new ArrayList<>();
+            DatabaseUtils.addFilePathToDB(getApplicationContext(), params[0], false);
+
+            paths = DatabaseUtils.getUntaggedImagesFromDB(getApplicationContext());
+
+            return paths;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> result) {
+            currentPhotoPath = "";
+            updateRecyclerView(result);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ImageUtils.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            String path = currentPhotoPath;
+            new TakePictureUpdateViews().execute(currentPhotoPath);
+            Intent imageViewerIntent = new Intent(this, ImageViewerActivity.class);
+            imageViewerIntent.putExtra(ImageViewerActivity.FILEPATH_EXTRA_KEY, path);
+            startActivity(imageViewerIntent);
+        }
     }
 }

@@ -83,8 +83,12 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestCameraPermissions();
-                dispatchTakePictureIntent();
+                if(ContextCompat.checkSelfPermission(MainWindow_Activity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    requestCameraPermissions();
+                }
+                else {
+                    dispatchTakePictureIntent();
+                }
             }
         });
 
@@ -139,7 +143,11 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ImageUtils.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            String path = currentPhotoPath;
             new TakePictureUpdateViews().execute(currentPhotoPath);
+            Intent imageViewerIntent = new Intent(this, ImageViewerActivity.class);
+            imageViewerIntent.putExtra(ImageViewerActivity.FILEPATH_EXTRA_KEY, path);
+            startActivity(imageViewerIntent);
         }
     }
 
