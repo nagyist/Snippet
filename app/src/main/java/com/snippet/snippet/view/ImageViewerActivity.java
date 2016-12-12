@@ -33,7 +33,7 @@ public class ImageViewerActivity extends AppCompatActivity {
     public static final String BITMAP_EXTRA_KEY = "snippet/bitmap";
     public static final int MAX_RESOLUTION = 4096;
 
-    private static long stopwatchStart;
+//    private static long stopwatchStart;
 
     @BindView(R.id.bigImageView) ImageView mImageView;
     @BindView(R.id.addManageTagsBtn) Button tagsButton;
@@ -133,7 +133,7 @@ public class ImageViewerActivity extends AppCompatActivity {
                 Toast.makeText(ImageViewerActivity.this, "You clicked Yes", Toast.LENGTH_SHORT).show();
                 //Set appropriate flag in database
                 //Launch ClarifAI request
-                stopwatchStart = System.currentTimeMillis();
+//                stopwatchStart = System.currentTimeMillis();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -157,10 +157,21 @@ public class ImageViewerActivity extends AppCompatActivity {
         @Override
         public void onReceiveTags(List<String> tags) {
             //Update the tags in the database
-            Log.d("CLARIFAI TIME TO RETURN", Long.toString(System.currentTimeMillis() - stopwatchStart));
+//            Log.d("CLARIFAI TIME TO RETURN", Long.toString(System.currentTimeMillis() - stopwatchStart));
+            Toast.makeText(ImageViewerActivity.this, "Successfully added tags!", Toast.LENGTH_SHORT).show();
             DatabaseUtils.addTagToFilePath(ImageViewerActivity.this, tags, mFilePath);
             tagAdapter.addTags(tags);
             DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, true);
+        }
+
+        @Override
+        public void onNetworkError() {
+            Toast.makeText(ImageViewerActivity.this, "Network Error. Please check your internet connection and try again.", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onResponseUnsuccessful() {
+            Toast.makeText(ImageViewerActivity.this, "Error fetching the tags, please try again.", Toast.LENGTH_LONG).show();
         }
     };
 

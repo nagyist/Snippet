@@ -1,10 +1,14 @@
 package com.snippet.snippet.controller.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Looper;
 import android.util.Log;
 
 import com.snippet.snippet.controller.TagListener;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -36,7 +40,17 @@ public class ClarifAIHelper {
     public void sendToClarifAI(String path, final TagListener tagReceiver) {
         //Generate and send the Asynchronous request to predict labels for the image
         Log.i("ClarifAI Helper", path);
-        File imageToSend = new File(path);
+//        File imageToSend = new File(path);
+
+        /* Begin Shrinking bitmap to send */
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 6;
+        Bitmap bmp = BitmapFactory.decodeFile(path, options);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] imageToSend = stream.toByteArray();
+        /* Finish shrinking bitmap image to send */
+
         Log.i("ClarifAI Helper", "Loaded Path");
         PredictRequest<Concept> temp = client.getDefaultModels().generalModel().predict()
                 .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageToSend)));
@@ -53,17 +67,22 @@ public class ClarifAIHelper {
                             }
                         }
                         Log.i("ClarifAI Helper", "Execute Tag Receiver");
+                        Looper.prepare();
                         tagReceiver.onReceiveTags(tags);
                     }
 
                     @Override
                     public void onClarifaiResponseUnsuccessful(int errorCode) {
                         Log.w("ClarifAI", "Response Unsuccessful");
+                        Looper.prepare();
+                        tagReceiver.onResponseUnsuccessful();
                     }
 
                     @Override
                     public void onClarifaiResponseNetworkError(IOException e) {
                         Log.e("ClarifAI", e.getMessage());
+                        Looper.prepare();
+                        tagReceiver.onNetworkError();
                     }
                 });
         Log.i("ClarifAI Helper", "Finished request");

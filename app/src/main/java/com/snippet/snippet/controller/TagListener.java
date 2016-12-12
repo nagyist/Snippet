@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface TagListener {
     void onReceiveTags(List<String> tags);
+    void onResponseUnsuccessful();
+    void onNetworkError();
 }
