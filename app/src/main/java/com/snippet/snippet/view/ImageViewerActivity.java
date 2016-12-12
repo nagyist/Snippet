@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.snippet.snippet.R;
@@ -17,6 +19,8 @@ import com.snippet.snippet.controller.DatabaseUtils;
 import com.snippet.snippet.controller.ImageUtils;
 import com.snippet.snippet.controller.TagListener;
 import com.snippet.snippet.controller.adapters.ClarifAIHelper;
+import com.snippet.snippet.controller.adapters.TagAdapter;
+import com.snippet.snippet.model.DatabaseHelper;
 
 import java.util.List;
 
@@ -33,11 +37,16 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     @BindView(R.id.bigImageView) ImageView mImageView;
     @BindView(R.id.addManageTagsBtn) Button tagsButton;
+    @BindView(R.id.tagGrid) GridView gridView;
+    @BindView(R.id.layoutTags) LinearLayout layoutTagsView;
+    @BindView(R.id.buttonCloseTags) Button closeTagsButton;
+    @BindView(R.id.buttonAddTag) Button addTagsButton;
 
     AlertDialog autoTagDialog;
 
     private int mImageId;
     private String mFilePath;
+    private TagAdapter tagAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +64,14 @@ public class ImageViewerActivity extends AppCompatActivity {
         mFilePath = getIntent().getStringExtra(FILEPATH_EXTRA_KEY);
         ImageUtils.addImageToImageView(this, mImageView, mFilePath, null, null);
 
+        //Add all current tags to the GridView
+        List<String> tags = DatabaseUtils.getTagsFromFilePath(ImageViewerActivity.this, mFilePath);
+        tagAdapter = new TagAdapter(ImageViewerActivity.this, tags, mFilePath);
+        tagAdapter.shouldAlsoRemoveFromDB(true);
+
+        //Add the adapter to the GridView
+        gridView.setAdapter(tagAdapter);
+
         //Build the dialog for prompting the user to send the image to ClarifAI
         createAutoTagDialog();
 
@@ -69,12 +86,29 @@ public class ImageViewerActivity extends AppCompatActivity {
             Toast.makeText(ImageViewerActivity.this, "Could not find image in DB", Toast.LENGTH_SHORT).show();
         }
 
-        // TODO placeholder
+        // Set the Add/Manage tags button to open the tag viewer window
         tagsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ImageViewerActivity.this, "Tags Button", Toast.LENGTH_SHORT).show();
+                layoutTagsView.setVisibility(View.VISIBLE);
+            }
+        });
 
+        //Allow the close button to close the tag viewer window
+        closeTagsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layoutTagsView.setVisibility(View.GONE);
+            }
+        });
+
+        //Allow the add button to launch a fragment to manually add tags
+        addTagsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AddManualTagFragment()
+                        .newInstance(mFilePath, tagAdapter)
+                        .show(ImageViewerActivity.this.getFragmentManager(), "AddManualTag");
             }
         });
     }
@@ -113,8 +147,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         builder.setNegativeButton(R.string.Autotag_Dialog_No, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(ImageViewerActivity.this, "You clicked No", Toast.LENGTH_SHORT).show();
-                //Set appropriate flag in database
-                DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, false);
+                //Don't do anything, because we want the user to tag images
             }
         });
         autoTagDialog = builder.create();
@@ -126,6 +159,7 @@ public class ImageViewerActivity extends AppCompatActivity {
             //Update the tags in the database
             Log.d("CLARIFAI TIME TO RETURN", Long.toString(System.currentTimeMillis() - stopwatchStart));
             DatabaseUtils.addTagToFilePath(ImageViewerActivity.this, tags, mFilePath);
+            tagAdapter.addTags(tags);
             DatabaseUtils.setAutoTaggedFromFilePath(ImageViewerActivity.this, mFilePath, true);
         }
     };
