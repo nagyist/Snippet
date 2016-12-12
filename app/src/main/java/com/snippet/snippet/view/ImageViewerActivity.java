@@ -3,6 +3,8 @@ package com.snippet.snippet.view;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.CursorIndexOutOfBoundsException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,6 +23,8 @@ import com.snippet.snippet.controller.TagListener;
 import com.snippet.snippet.controller.adapters.ClarifAIHelper;
 import com.snippet.snippet.controller.adapters.TagAdapter;
 import com.snippet.snippet.model.DatabaseHelper;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -62,7 +66,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mFilePath = getIntent().getStringExtra(FILEPATH_EXTRA_KEY);
-        ImageUtils.addImageToImageView(this, mImageView, mFilePath, null, null);
+        ImageUtils.addImageToImageView(this, target, mFilePath, null, null);
 
         //Add all current tags to the GridView
         List<String> tags = DatabaseUtils.getTagsFromFilePath(ImageViewerActivity.this, mFilePath);
@@ -172,6 +176,33 @@ public class ImageViewerActivity extends AppCompatActivity {
         @Override
         public void onResponseUnsuccessful() {
             Toast.makeText(ImageViewerActivity.this, "Error fetching the tags, please try again.", Toast.LENGTH_LONG).show();
+        }
+    };
+
+    Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if(bitmap.getHeight() > 4096 || bitmap.getWidth() > 4096) {
+                if(bitmap.getHeight() > bitmap.getWidth()) {
+                    int heightDiff = bitmap.getHeight() - 4096;
+                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() - heightDiff, bitmap.getHeight() - heightDiff, false);
+                }
+                else {
+                    int widthDiff = bitmap.getWidth() - 4096;
+                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() - widthDiff, bitmap.getHeight() - widthDiff, false);
+                }
+            }
+            mImageView.setImageBitmap(bitmap);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            mImageView.setImageDrawable(errorDrawable);
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+            mImageView.setImageDrawable(placeHolderDrawable);
         }
     };
 

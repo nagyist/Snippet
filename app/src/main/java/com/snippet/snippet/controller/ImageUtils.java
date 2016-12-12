@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.snippet.snippet.R;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,6 +86,16 @@ public class ImageUtils {
      * @param resizeHeight The new height you want the image to be to reduce momory costs (NULL IF THERE IS NO CHANGE TO THE IMAGE)
      */
     public static void addImageToImageView(Context context, ImageView imageView, String filePath, Integer resizeWidth, Integer resizeHeight) {
+//        Log.d("DEBUG File Path", "File Path is: " + filePath);
+        if(resizeHeight == null || resizeWidth == null) {
+            Picasso.with(context).load(new File(filePath)).placeholder(R.drawable.placeholder).into(imageView);
+        }
+        else {
+            Picasso.with(context).load(new File(filePath)).resize(resizeWidth, resizeHeight).centerCrop().placeholder(R.drawable.placeholder).into(imageView);
+        }
+    }
+
+    public static void addImageToImageView(Context context, Target imageView, String filePath, Integer resizeWidth, Integer resizeHeight) {
 //        Log.d("DEBUG File Path", "File Path is: " + filePath);
         if(resizeHeight == null || resizeWidth == null) {
             Picasso.with(context).load(new File(filePath)).placeholder(R.drawable.placeholder).into(imageView);
