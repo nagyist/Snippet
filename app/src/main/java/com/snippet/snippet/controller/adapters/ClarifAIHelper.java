@@ -47,7 +47,7 @@ public class ClarifAIHelper {
         options.inSampleSize = 6;
         Bitmap bmp = BitmapFactory.decodeFile(path, options);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] imageToSend = stream.toByteArray();
         /* Finish shrinking bitmap image to send */
 
