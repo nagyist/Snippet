@@ -140,14 +140,18 @@ public class MainWindow_Activity extends AppCompatActivity implements Navigation
             }
         });
 
-        //Get a list of all possible tags
+        new AsyncImageLogicPaths().execute();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Get an updated list of all possible tags
         List<String> allTags = DatabaseUtils.getAllTags(this);
 
         //Set the values for the AutoComplete search bar
         ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, allTags);
         searchBar.setAdapter(autoCompleteAdapter);
-
-        new AsyncImageLogicPaths().execute();
     }
 
     @Override
